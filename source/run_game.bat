@@ -1,2 +1,3 @@
 make
-..\tools\pcsx-redux\pcsx-redux.exe -run -exe MAIN.ps-exe
+cd ..\tools\pcsx-redux
+pcsx-redux.exe -run -exe ..\..\source\MAIN.ps-exe
