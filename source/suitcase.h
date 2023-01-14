@@ -7,6 +7,8 @@
 #include "dcCamera.h"
 
 #define MAX_SUITCASES 20
+#define MAX_SHAPES    2
+#define MAX_PATTERNS  2
 
 typedef struct 
 {
