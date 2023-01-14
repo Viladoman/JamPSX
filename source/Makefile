@@ -1,7 +1,7 @@
 TARGET = MAIN
 TYPE = ps-exe
 
-SRCS = main.c image.c \
+SRCS = main.c suitcase.c airport.c image.c \
 		data/scan01.tim \
 		data/hearts.tim \
 		data/clubs.tim \
