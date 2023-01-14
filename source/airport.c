@@ -16,14 +16,15 @@
 
 static int gSpawnTimerBase  = 300; //5 * 250; 
 static int gSpawnTimerRange = 1; //3 * 250; 
-static int gScannerWaitTime = 150; //3 * 250; 
-static int gSuitcaseSpeed   = 2; 
+static int gScannerWaitTime = 100; //3 * 250; 
+static int gSuitcaseSpeed   = 4; 
+static int gStartLives      = 3; 
 
 typedef struct 
 {
     unsigned char beltId; 
-    unsigned char prevNode; 
-    unsigned char nextNode;
+    char          prevNode; 
+    char          nextNode;
     int           timer; 
     int           totalTimer; 
 } SuitcaseState;
@@ -31,13 +32,16 @@ typedef struct
 typedef struct
 {
     SDC_Input input[2];
-    unsigned char level; 
     int scanners[2];
     int outputs[2];
     int nextSpawn[2];
     unsigned char beltSize[2];
 
     SuitcaseState gSuitcaseStates[MAX_SUITCASES];
+
+    int score; 
+    int lives; 
+
 } Airport;
 
 static Airport gAirport; 
@@ -75,8 +79,6 @@ int lerpS(int start, int dest, unsigned pos) {
 
 void CreateGraph()
 {
-    //TODO ~ ramonv ~ manual graph 
-
     gAirport.beltSize[0] = sizeof(gNodesA)/sizeof(gNodesA[0]);
     gAirport.beltSize[1] = 2; 
 
@@ -90,9 +92,11 @@ void CreateGraph()
 void StartAirport()
 {
     ResetSuitcases(); 
-    gAirport.level = 0; 
     dcInput_InitializePad(&(gAirport.input[0]), 0);
     dcInput_InitializePad(&(gAirport.input[1]), 1);    
+
+    gAirport.lives = gStartLives; 
+    gAirport.score = 0; 
 
     CreateGraph(); 
 
@@ -112,14 +116,16 @@ void TrySpawnSuitcaseAtBelt(unsigned char beltId)
         SetupSuitcase(newSuitcase, GetRandomNumber(0,MAX_SHAPES), GetRandomNumber(0,MAX_PATTERNS), GetRandomNumber(0,2));
 
         const int suitcaseIndex = GetSuitcaseIndex(newSuitcase);
+
         gAirport.gSuitcaseStates[suitcaseIndex].beltId   = beltId;
         gAirport.gSuitcaseStates[suitcaseIndex].prevNode = -1;
         gAirport.gSuitcaseStates[suitcaseIndex].nextNode = 0;
         gAirport.gSuitcaseStates[suitcaseIndex].timer    = 0; //force recompute
+        gAirport.gSuitcaseStates[suitcaseIndex].totalTimer = 1; //force recompute
 
         //Locate initial suitcase position
-        //newSuitcase->yaw = GetRandomNumber();
         newSuitcase->position = GetNodes(beltId)[0];
+        newSuitcase->yaw = GetRandomNumber(0,4096); 
     }
 }
 
@@ -144,6 +150,18 @@ int FindNextNode(int beltId, int nodeId)
     return newNodeId < gAirport.beltSize[beltId] ? newNodeId : -1;
 }
 
+void ValidateSuitcase(int index)
+{
+    printf("Validating suitcase %d...\n", index);
+
+    //TODO ~ add some feedback 
+    const int beltId = gAirport.gSuitcaseStates[index].beltId; 
+    if ( dcInput_IsPressed(&gAirport.input[beltId], PADRup) ) 
+    { 
+        ++gAirport.score;
+    }
+}
+
 void MoveSuitcase(int index, int elapsed)
 {
     if ( !IsSuitcaseActive(index) )
@@ -154,8 +172,6 @@ void MoveSuitcase(int index, int elapsed)
     int belt     = gAirport.gSuitcaseStates[index].beltId; 
     int prevNode = gAirport.gSuitcaseStates[index].prevNode; 
     int nextNode = gAirport.gSuitcaseStates[index].nextNode; 
-
-    FntPrint("Case at %d - %d - %d\n", index, prevNode, nextNode );
 
     gAirport.gSuitcaseStates[index].timer -= elapsed; 
     if (gAirport.gSuitcaseStates[index].timer <= 0)
@@ -168,7 +184,7 @@ void MoveSuitcase(int index, int elapsed)
 
         if ( IsScannerNode(belt,nextNode) && prevNode != nextNode )
         { 
-            //We jsut arrived to a scanner
+            //We just arrived to a scanner
 
             //TODO ~ ramonv ~ perform scanner wait 
             
@@ -176,16 +192,14 @@ void MoveSuitcase(int index, int elapsed)
             gAirport.gSuitcaseStates[index].totalTimer = gScannerWaitTime;
             MoveSuitcase(index, extraElapsed);
         }
-        else if ( IsOutputNode(belt,nextNode) && prevNode != nextNode )
-        {
-            //We just arrives to the output
-
-            //TODO ~ ramonv ~ perform output check 
-
-            MoveSuitcase(index, extraElapsed);
-        }
         else 
         { 
+            if ( IsOutputNode(belt,nextNode) )
+            {
+                //We just arrives to the output
+                ValidateSuitcase(index); 
+            }
+
             int newNextNode = FindNextNode(belt, nextNode); 
             int newPrevNode = nextNode; 
             gAirport.gSuitcaseStates[index].nextNode = newNextNode; 
@@ -235,8 +249,6 @@ void MoveSuitcase(int index, int elapsed)
         suitcase->position.vy = lerpS(prevPos.vy + positiveOffset,nextPos.vy + positiveOffset,factor) - positiveOffset;
         suitcase->position.vz = lerpS(prevPos.vz + positiveOffset,nextPos.vz + positiveOffset,factor) - positiveOffset;
 
-        //FntPrint("Intepol %d -> %d | %d\n", prevNode, nextNode, factor );
-
         //TODO ~ ramonv ~ orient yaw ( optional )
     } 
 }
@@ -245,12 +257,29 @@ void MoveSuitcase(int index, int elapsed)
 
 void UpdateAirport(int elapsed)
 {
-    // Move current suitcases
+    int hackCount = 0; 
+    for (int i=0;i<MAX_SUITCASES;++i)
+    { 
+        if ( IsSuitcaseActive(i) )
+        {
+             ++hackCount;
+        }
+    }   
 
+    // Move current suitcases
     for (int i=0;i<MAX_SUITCASES;++i)
     { 
         MoveSuitcase(i, elapsed); 
     }    
+
+    int hackCount2 = 0; 
+    for (int i=0;i<MAX_SUITCASES;++i)
+    { 
+        if ( IsSuitcaseActive(i) )
+        {
+             ++hackCount2;
+        }
+    }  
 
     // Trigger new spawns 
     //for (int i=0;i<2;++i)
@@ -301,9 +330,24 @@ void RenderBackground(SDC_Render* render, SDC_Camera* camera) {
     dcRender_DrawMesh(render, &Path_P2_Mesh, &MVP, &drawParams );
 }
 
+void Test(int pad, int button )
+{
+    if (dcInput_IsPressed(&gAirport.input[pad],button))
+    {
+        printf("PAD %d - %d\n", pad, button);
+    }
+}
+
 void RenderAirport(SDC_Render* render, SDC_Camera* camera)
 {
-    RenderBackground(render, camera); 
+    for (int i=0;i<2;++i)
+    {
+        dcInput_UpdateInput(&gAirport.input[i]);
+    }
 
+    RenderBackground(render, camera); 
     RenderSuitcases(render, camera);
+
+    //Render UI / Score
+    FntPrint("Lives: %d Score: %d \n", gAirport.lives, gAirport.score);          
 }

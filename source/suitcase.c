@@ -1,5 +1,6 @@
 #include "suitcase.h"
 
+#include <stdio.h>
 #include <stddef.h>
 
 #include "dcMisc.h"
@@ -66,7 +67,7 @@ void ResetSuitcase(Suitcase* suitcase)
 }
 
 Suitcase* SpawnSuitcase()
-{ 
+{     
     for (int i = 0; i< MAX_SUITCASES; ++i)
     { 
         if ( !gSuitcasesActives[i] )
@@ -82,7 +83,7 @@ Suitcase* SpawnSuitcase()
 
 int GetSuitcaseIndex(Suitcase* suitcase)
 {
-    return suitcase ? (suitcase - gSuitcases) / sizeof(Suitcase) : -1;
+    return suitcase ? suitcase - gSuitcases : -1;
 }
 
 Suitcase* GetSuitcase(int index)
