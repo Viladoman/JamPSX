@@ -53,9 +53,6 @@ int main(void)
     //GameState_ChangeGameState(MAINMENU_GAMESTATE);
     GameState_ChangeGameState(AIRPORT_GAMESTATE);
 
-    //int elapsed = 0; 
-    //int count = 0; 
-
     while (1) 
     {
         GameState_Update(1);

@@ -6,7 +6,7 @@
 #include "dcRender.h"
 #include "dcCamera.h"
 
-#define MAX_SUITCASES 20
+#define MAX_SUITCASES 10
 #define MAX_SHAPES    5
 #define MAX_PATTERNS  5
 
