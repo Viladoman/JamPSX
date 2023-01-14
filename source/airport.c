@@ -24,10 +24,10 @@
 
 #include "meshes/Plane001.h"
 
-static int gSpawnTimerBase  = 300; //5 * 250; 
+static int gSpawnTimerBase  = 100; //5 * 250; 
 static int gSpawnTimerRange = 1; //3 * 250; 
-static int gScannerWaitTime = 100; //3 * 250; 
-static int gSuitcaseSpeed   = 4; 
+static int gScannerWaitTime = 50; //3 * 250; 
+static int gSuitcaseSpeed   = 6; 
 static int gStartLives      = 50; 
 
 extern unsigned long _binary_data_Path_Texture_tim_start[];
@@ -56,24 +56,60 @@ typedef struct
     int score; 
     int lives; 
 
+    bool paused; 
+
 } Airport;
 
 static Airport gAirport; 
 
-VECTOR gNodesA[] = { 
-    {-957,81,-390},
-    {-402,81,-390},
-    {-27,81,-390},
-    {-27,81,-211},
-    {-166,81,-169},
-    {-166,81,192},
-    {124,81,212},
-    {167,81,394},
-    {678,81,394},
-    {934,81,394}
+VECTOR gNodesA[] = {
+{-957, 81, -390}, // _NodeA_01_0_0
+{-470, 81, -390}, // _NodeA_02_0_1
+{-60, 81, -390}, // _NodeA_03_0_2
+{-32, 81, -378}, // _NodeA_03_0_3
+{-20, 81, -351}, // _NodeA_03_0_4
+{-20, 81, -230}, // _NodeA_04_0_2
+{-39, 81, -205}, // _NodeA_04_0_3
+{-63, 81, -188}, // _NodeA_04_0_4
+{-152, 81, -182}, // _NodeA_05_0_0
+{-166, 81, -169}, // _NodeA_05_0_001
+{-190, 81, -150}, // _NodeA_05_0_002
+{-189, 81, 175}, // _NodeA_06_0_0
+{-174, 81, 199}, // _NodeA_06_0_001
+{-150, 81, 215}, // _NodeA_06_0_002
+{119, 81, 213}, // _NodeA_07_0_0
+{144, 81, 230}, // _NodeA_07_0_001
+{160, 81, 254}, // _NodeA_07_0_002
+{160, 81, 359}, // _NodeA_08_0_0
+{175, 81, 383}, // _NodeA_08_0_001
+{200, 81, 400}, // _NodeA_08_0_002
+{678, 81, 394}, // _NodeA_09_0_1
+{934, 81, 394} // _NodeA_10_0_2
 };
-
-VECTOR gNodesB[] = { {-1000,0,0}, {1000,0,0} };
+VECTOR gNodesB[] = {
+{957, 12, -396}, // _NodeB_01_0_001
+{545, 20, -400}, // _NodeB_01_0_002
+{169, 12, -400}, // _NodeB_01_0_003
+{144, 12, -386}, // _NodeB_01_0_004
+{131, 12, -359}, // _NodeB_01_0_005
+{129, 12, -240}, // _NodeB_01_0_006
+{149, 12, -211}, // _NodeB_01_0_007
+{169, 12, -200}, // _NodeB_01_0_008
+{300, 12, -200}, // _NodeB_01_0_009
+{324, 12, -184}, // _NodeB_01_0_010
+{340, 12, -160}, // _NodeB_01_0_011
+{340, 12, -31}, // _NodeB_01_0_012
+{324, 12, -6}, // _NodeB_01_0_013
+{299, 12, 9}, // _NodeB_01_0_014
+{-310, 12, 9}, // _NodeB_01_0_015
+{-335, 12, 26}, // _NodeB_01_0_016
+{-350, 12, 49}, // _NodeB_01_0_017
+{-349, 12, 340}, // _NodeB_01_0_018
+{-365, 12, 364}, // _NodeB_01_0_019
+{-389, 12, 380}, // _NodeB_01_0_020
+{-680, 12, 380}, // _NodeB_01_0_021
+{-943, 12, 379} // _NodeB_01_0_022
+};
 
 VECTOR* GetNodes(unsigned char beltId)
 { 
@@ -116,6 +152,7 @@ void StartAirport()
 
     gAirport.lives = gStartLives; 
     gAirport.score = 0; 
+    gAirport.paused = false;
 
     CreateGraph(); 
 
@@ -209,8 +246,7 @@ void MoveSuitcase(int index, int elapsed)
         return;
     }
     
-    FntPrint("Case %d is %d \n", index, GetSuitcase(index)->content );  
-    
+    //FntPrint("Case %d is %d \n", index, GetSuitcase(index)->content );  
 
     int belt     = gAirport.gSuitcaseStates[index].beltId; 
     int prevNode = gAirport.gSuitcaseStates[index].prevNode; 
@@ -296,18 +332,18 @@ void MoveSuitcase(int index, int elapsed)
     } 
 }
 
-//bool hack = false; 
-
 void UpdateAirport(int elapsed)
 {
-    int hackCount = 0; 
-    for (int i=0;i<MAX_SUITCASES;++i)
+    //Update pause
+    if ( dcInput_BecomesPressed(&gAirport.input[0], PADstart) || dcInput_BecomesPressed(&gAirport.input[1], PADstart))
+    {
+        gAirport.paused = !gAirport.paused;
+    }
+
+    if ( gAirport.paused )
     { 
-        if ( IsSuitcaseActive(i) )
-        {
-             ++hackCount;
-        }
-    }   
+        return; 
+    }
 
     // Move current suitcases
     for (int i=0;i<MAX_SUITCASES;++i)
@@ -315,18 +351,8 @@ void UpdateAirport(int elapsed)
         MoveSuitcase(i, elapsed); 
     }    
 
-    int hackCount2 = 0; 
-    for (int i=0;i<MAX_SUITCASES;++i)
-    { 
-        if ( IsSuitcaseActive(i) )
-        {
-             ++hackCount2;
-        }
-    }  
-
     // Trigger new spawns 
-    //for (int i=0;i<2;++i)
-    int i=0; 
+    for (int i=0;i<2;++i)
     { 
         gAirport.nextSpawn[i] -= elapsed;
 
@@ -337,12 +363,6 @@ void UpdateAirport(int elapsed)
             TrySpawnSuitcaseAtBelt(i);
         }
     }
-
-   //if ( !hack)
-   //{
-   //    hack = true; 
-   //    TrySpawnSuitcaseAtBelt(0);
-   //}
 }
 
 void RenderBackground(SDC_Render* render, SDC_Camera* camera) {
@@ -363,10 +383,6 @@ void RenderBackground(SDC_Render* render, SDC_Camera* camera) {
     MATRIX MVP;
     dcCamera_ApplyCameraTransform(camera, &transform, &MVP);
 
-    // dcRender_DrawMesh(render, &Game_Ground_P1_Mesh, &MVP, &drawParams );
-    // dcRender_DrawMesh(render, &Game_Ground_P2_Mesh, &MVP, &drawParams );
-    // dcRender_DrawMesh(render, &Plane001_Mesh, &MVP, &drawParams );
-
     dcRender_DrawMesh(render, &Exit_P1_Mesh, &MVP, &drawParams );
     dcRender_DrawMesh(render, &Exit_P2_Mesh, &MVP, &drawParams );
 
@@ -384,6 +400,26 @@ void RenderBackground(SDC_Render* render, SDC_Camera* camera) {
     drawParams.tim = NULL;
 }
 
+void RenderScanners(SDC_Render* render, SDC_Camera* camera)
+{
+    for (int i=0;i<MAX_SUITCASES;++i)
+    {
+        unsigned char beltId = gAirport.gSuitcaseStates[i].beltId;
+        char prevNode = gAirport.gSuitcaseStates[i].prevNode;
+        char nextNode = gAirport.gSuitcaseStates[i].nextNode;
+        if ( prevNode == nextNode && IsScannerNode(beltId, nextNode) )
+        {
+            unsigned char thisContent = GetSuitcase(i)->content;
+
+            FntPrint("BELT %d has %d\n", beltId, thisContent);  
+            //TODO ~ RUBEN ~ AQUI 
+
+
+            break;
+        }
+    }
+}
+
 void RenderAirport(SDC_Render* render, SDC_Camera* camera)
 {
     for (int i=0;i<2;++i)
@@ -394,10 +430,16 @@ void RenderAirport(SDC_Render* render, SDC_Camera* camera)
     RenderBackground(render, camera); 
     RenderSuitcases(render, camera);
 
+    RenderScanners(render, camera);
+
     //Render UI / Score
     CVECTOR color = {127, 127, 127};
     char txt[256];
     sprintf(txt, "LIVES: %d SCORE: %d \n", gAirport.lives, gAirport.score);
     dcFont_Print(render, 256, 220, &color, txt);
-    // FntPrint("Lives: %d Score: %d \n", gAirport.lives, gAirport.score);          
+
+    if ( gAirport.paused )
+    {
+        dcFont_Print(render, 256, 200, &color, "PAUSED");
+    }
 }
