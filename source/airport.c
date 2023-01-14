@@ -82,10 +82,10 @@ void CreateGraph()
     gAirport.spawnPoints[1] = &gNodeStorage[2];
 }
 
-void StartAirport(unsigned char level)
+void StartAirport()
 {
     ResetSuitcases(); 
-    gAirport.level = level; 
+    gAirport.level = 0; 
     dcInput_InitializePad(&(gAirport.input[0]), 0);
     dcInput_InitializePad(&(gAirport.input[1]), 1);    
 

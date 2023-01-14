@@ -2,6 +2,7 @@ TARGET = MAIN
 TYPE = ps-exe
 
 SRCS = main.c suitcase.c airport.c image.c \
+		gamestate.c main_menu.c \
 		data/scan01.tim \
 		data/hearts.tim \
 		data/clubs.tim \
