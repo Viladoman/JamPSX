@@ -31,7 +31,16 @@ static int gSuitcaseSpeed   = 6;
 static int gStartLives      = 50; 
 
 extern unsigned long _binary_data_Path_Texture_tim_start[];
-extern unsigned long _binary_data_Path_Texture_tim_start[];
+
+extern unsigned long _binary_data_BombaAzul_tim_start[];
+extern unsigned long _binary_data_BombaRoja_tim_start[];
+extern unsigned long _binary_data_MarihuanaAzul_tim_start[];
+extern unsigned long _binary_data_MarihuanaRojo_tim_start[];
+extern unsigned long _binary_data_OsitoAzul_tim_start[];
+extern unsigned long _binary_data_OsitoRojo_tim_start[];
+extern unsigned long _binary_data_ZapatoAzul_tim_start[];
+extern unsigned long _binary_data_ZapatoRojo_tim_start[];
+TIM_IMAGE gImageOk, gImageBad;
 
 typedef struct 
 {
@@ -162,6 +171,18 @@ void StartAirport()
     }
     // load textures
     dcRender_LoadTexture(&gAirport.pathTexture, _binary_data_Path_Texture_tim_start);
+
+// extern unsigned long _binary_data_BombaAzul_tim_start[];
+// extern unsigned long _binary_data_BombaRoja_tim_start[];
+// extern unsigned long _binary_data_MarihuanaAzul_tim_start[];
+// extern unsigned long _binary_data_MarihuanaRojo_tim_start[];
+// extern unsigned long _binary_data_OsitoAzul_tim_start[];
+// extern unsigned long _binary_data_OsitoRojo_tim_start[];
+// extern unsigned long _binary_data_ZapatoAzul_tim_start[];
+// extern unsigned long _binary_data_ZapatoRojo_tim_start[];
+
+    dcRender_LoadTexture(&gImageOk, _binary_data_BombaAzul_tim_start);
+    dcRender_LoadTexture(&gImageBad, _binary_data_BombaRoja_tim_start);
 }
 
 void TrySpawnSuitcaseAtBelt(unsigned char beltId)
@@ -390,11 +411,6 @@ void RenderBackground(SDC_Render* render, SDC_Camera* camera) {
     dcRender_DrawMesh(render, &Scanner_P2_Mesh, &MVP, &drawParams );
 
     drawParams.tim = &gAirport.pathTexture;
-    dcRender_DrawMesh(render, &ScannerQuad_P1_Mesh, &MVP, &drawParams );
-    drawParams.tim = &gAirport.pathTexture;
-    dcRender_DrawMesh(render, &ScannerQuad_P2_Mesh, &MVP, &drawParams );
-
-    drawParams.tim = &gAirport.pathTexture;
     dcRender_DrawMesh(render, &Path_P1_Mesh, &MVP, &drawParams );
     dcRender_DrawMesh(render, &Path_P2_Mesh, &MVP, &drawParams );
     drawParams.tim = NULL;
@@ -413,7 +429,28 @@ void RenderScanners(SDC_Render* render, SDC_Camera* camera)
 
             FntPrint("BELT %d has %d\n", beltId, thisContent);  
             //TODO ~ RUBEN ~ AQUI 
+            SDC_Mesh3D* mesh = beltId ? &ScannerQuad_P1_Mesh : &ScannerQuad_P2_Mesh;
+            TIM_IMAGE* tim = thisContent ? &gImageBad : &gImageOk;
 
+            SDC_DrawParams drawParams = {
+                .tim = NULL,
+                .constantColor = {127, 127, 127},
+                .bLighting = 1,
+                .bUseConstantColor = 1
+            };
+
+            SVECTOR rotation = {0};
+            VECTOR translation = {0, 0, 0, 0};
+            MATRIX transform;
+
+            RotMatrix(&rotation, &transform);
+            TransMatrix(&transform, &translation);
+
+            MATRIX MVP;
+            dcCamera_ApplyCameraTransform(camera, &transform, &MVP);
+
+            drawParams.tim = tim;
+            dcRender_DrawMesh(render, mesh, &MVP, &drawParams );
 
             break;
         }
