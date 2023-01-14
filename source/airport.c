@@ -85,8 +85,8 @@ void CreateGraph()
     gAirport.scanners[0] = 1;
     gAirport.scanners[1] = 1;
 
-    gAirport.outputs[0] = 1;
-    gAirport.outputs[1] = 1;
+    gAirport.outputs[0] = gAirport.beltSize[0] - 2;
+    gAirport.outputs[1] = gAirport.beltSize[1] - 2;
 }
 
 void StartAirport()
@@ -152,13 +152,28 @@ int FindNextNode(int beltId, int nodeId)
 
 void ValidateSuitcase(int index)
 {
-    printf("Validating suitcase %d...\n", index);
-
     //TODO ~ add some feedback 
-    const int beltId = gAirport.gSuitcaseStates[index].beltId; 
-    if ( dcInput_IsPressed(&gAirport.input[beltId], PADRup) ) 
+    const int beltId = gAirport.gSuitcaseStates[index].beltId;
+
+    unsigned char content = GetSuitcase(index)->content;
+
+    char validator = 0; 
+    if ( dcInput_IsPressed(&gAirport.input[beltId], PADRup) )    { validator |= 2; }
+    if ( dcInput_IsPressed(&gAirport.input[beltId], PADRdown) )  { validator |= 4; }
+    if ( dcInput_IsPressed(&gAirport.input[beltId], PADRleft) )  { validator |= 8; }
+    if ( dcInput_IsPressed(&gAirport.input[beltId], PADRright) ) { validator |= 16; }
+
+    char contentMask = content == 0? 0 : 1 << content;
+
+    printf("Validating... %d against %d\n", contentMask, validator);
+
+    if ( contentMask == validator ) 
     { 
         ++gAirport.score;
+    }
+    else 
+    { 
+        --gAirport.lives;
     }
 }
 
@@ -168,6 +183,9 @@ void MoveSuitcase(int index, int elapsed)
     { 
         return;
     }
+    
+    FntPrint("Case %d is %d \n", index, GetSuitcase(index)->content );  
+    
 
     int belt     = gAirport.gSuitcaseStates[index].beltId; 
     int prevNode = gAirport.gSuitcaseStates[index].prevNode; 
