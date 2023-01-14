@@ -330,14 +330,6 @@ void RenderBackground(SDC_Render* render, SDC_Camera* camera) {
     dcRender_DrawMesh(render, &Path_P2_Mesh, &MVP, &drawParams );
 }
 
-void Test(int pad, int button )
-{
-    if (dcInput_IsPressed(&gAirport.input[pad],button))
-    {
-        printf("PAD %d - %d\n", pad, button);
-    }
-}
-
 void RenderAirport(SDC_Render* render, SDC_Camera* camera)
 {
     for (int i=0;i<2;++i)
