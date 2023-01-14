@@ -6,6 +6,7 @@ void dcInput_Init() {
 
 void dcInput_InitializePad(SDC_Input *input, int padId) {
     input->padId = padId;
+    input->padState = PadRead(input->padId);
 }
 
 bool dcInput_BecomesPressed(SDC_Input *input, int key) {

@@ -2,7 +2,7 @@ TARGET = MAIN
 TYPE = ps-exe
 
 SRCS = main.c suitcase.c airport.c image.c \
-		gamestate.c main_menu.c \
+		gamestate.c main_menu.c gameover.c \
 		data/Baggage_A.tim \
 		data/Baggage_B.tim \
 		data/Baggage_C.tim \

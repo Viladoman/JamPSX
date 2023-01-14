@@ -21,14 +21,6 @@
 #include "main_menu.h"
 #include "gamestate.h"
 
-enum EGameStates {
-    AIRPORT_GAMESTATE = 0,
-    MAINMENU_GAMESTATE = 1
-};
-
-SGameState GameStates[] = { {StartAirport, UpdateAirport, RenderAirport},
-                            {InitMainMenu, UpdateMainMenu, RenderMainMenu} };
-
 int main(void) 
 {
     dcMemory_Init();
@@ -59,7 +51,8 @@ int main(void)
     SVECTOR lightColor1 = {DC_ONE/2, DC_ONE/2, DC_ONE/2};
     dcRender_SetLight(&render, 1, &lightDir1, &lightColor1);
 
-    GameState_ChangeGameState(&GameStates[AIRPORT_GAMESTATE]);
+    //GameState_ChangeGameState(MAINMENU_GAMESTATE);
+    GameState_ChangeGameState(AIRPORT_GAMESTATE);
 
     // Font
     dcFont_UseSystemFont();
