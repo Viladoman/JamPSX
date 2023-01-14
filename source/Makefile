@@ -4,6 +4,11 @@ TYPE = ps-exe
 SRCS = main.c suitcase.c airport.c image.c \
 		gamestate.c main_menu.c \
 		data/scan01.tim \
+		data/Baggage_A.tim \
+		data/Baggage_B.tim \
+		data/Baggage_C.tim \
+		data/Baggage_D.tim \
+		data/Baggage_E.tim \
 		data/hearts.tim \
 		data/clubs.tim \
 		data/palette_blue.tim data/palette_red.tim \

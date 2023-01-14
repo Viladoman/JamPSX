@@ -42,7 +42,7 @@ int main(void)
     int  height = 240;
 
     CVECTOR bgColor = {60, 120, 120};
-    dcRender_Init(&render, width, height, bgColor, 4096, 8192, RENDER_MODE_PAL);
+    dcRender_Init(&render, width, height, bgColor, 4096, 8192*8, RENDER_MODE_PAL);
     dcCamera_SetScreenResolution(&camera, width, height);
     dcCamera_SetCameraPosition(&camera, 0, cameraHeight, distance);
     dcCamera_LookAt(&camera, &VECTOR_ZERO);
