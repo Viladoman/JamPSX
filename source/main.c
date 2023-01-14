@@ -65,8 +65,8 @@ int main(void)
 
     while (1) 
     {
-        GameState_Update(elapsed);
-        FntPrint("GameDev Challenge Sphere Demo %d\n", elapsed);
+        GameState_Update(1);
+        //FntPrint("GameDev Challenge Sphere Demo %d\n", elapsed);        
         GameState_Render(&render, &camera);
 
         //elapsed = 
