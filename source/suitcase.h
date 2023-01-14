@@ -1,8 +1,12 @@
 #ifndef _SUITCASE_H_
 #define _SUITCASE_H_
 
+#include <stdbool.h>
+
 #include "dcRender.h"
 #include "dcCamera.h"
+
+#define MAX_SUITCASES 20
 
 typedef struct 
 {
@@ -17,6 +21,9 @@ typedef struct
 void ResetSuitcases();
 
 Suitcase* SpawnSuitcase();
+int  GetSuitcaseIndex(Suitcase* suitcase);
+Suitcase* GetSuitcase(int index);
+bool IsSuitcaseActive(int index);
 void DestroySuitcase(Suitcase* input);
 void SetupSuitcase(Suitcase* suitcase, unsigned int shape, unsigned int pattern, unsigned char content);
 void RenderSuitcase(SDC_Render* render, SDC_Camera* camera, Suitcase* suitcase);

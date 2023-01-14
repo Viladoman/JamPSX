@@ -118,7 +118,7 @@ typedef struct
 } SDC_DrawParams;
 
 void dcRender_Init(SDC_Render* render, int width, int height, CVECTOR bgColor, int orderingTableLength/* = 4096*/, int bytesPrimitives/* = 8192*/, EDC_Mode mode );
-void dcRender_SwapBuffers(SDC_Render* render);
+int  dcRender_SwapBuffers(SDC_Render* render);
 
 void dcRender_LoadTexture(TIM_IMAGE* tim, u_long* texture);
 void dcRender_DrawSpriteRect(SDC_Render* render, const TIM_IMAGE *tim, short x, short y, short w, short h, const DVECTOR *uv, const CVECTOR *color);

@@ -113,11 +113,11 @@ void dcRender_SetAmbientColor(SDC_Render* render, CVECTOR* ambientColor)
     SetBackColor(render->ambientColor.r, render->ambientColor.g, render->ambientColor.b);
 }
 
-void dcRender_SwapBuffers(SDC_Render* render) {
+int dcRender_SwapBuffers(SDC_Render* render) {
     // _dcRender_ReportPrimitivesSize(render);
     
     DrawSync( 0 );
-    VSync( 0 );
+    int syncValue = VSync( 0 );
     SetDispMask( 1 );
     
     render->doubleBufferIndex = !render->doubleBufferIndex;
@@ -132,6 +132,8 @@ void dcRender_SwapBuffers(SDC_Render* render) {
     
     ClearOTagR( render->orderingTable[render->doubleBufferIndex], render->orderingTableCount );
     render->nextPrimitive = render->primitives[render->doubleBufferIndex];    
+
+    return syncValue; 
 }
 
 void dcRender_LoadTexture(TIM_IMAGE* tim, u_long* texture) {

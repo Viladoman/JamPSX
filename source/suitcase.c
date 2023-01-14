@@ -1,11 +1,9 @@
 #include "suitcase.h"
 
-#include <stdbool.h>
 #include <stddef.h>
 
 #include "dcMisc.h"
 
-#define MAX_SUITCASES 20
 #define MAX_SHAPES    2
 #define MAX_PATTERNS  2
 
@@ -67,6 +65,21 @@ Suitcase* SpawnSuitcase()
     return NULL;
 }
 
+int GetSuitcaseIndex(Suitcase* suitcase)
+{
+    return suitcase ? (suitcase - gSuitcases) / sizeof(Suitcase) : -1;
+}
+
+Suitcase* GetSuitcase(int index)
+{
+    return index < MAX_SUITCASES ? &(gSuitcases[index]) : NULL;
+}
+
+bool IsSuitcaseActive(int index)
+{ 
+    return gSuitcasesActives[index];
+}
+
 void DestroySuitcase(Suitcase* input)
 { 
     for (int i = 0; i< MAX_SUITCASES; ++i)
@@ -94,13 +107,6 @@ void RenderSuitcase(SDC_Render* render, SDC_Camera* camera, Suitcase* suitcase)
         .bLighting = 1,
         .bUseConstantColor = 1
     };
-
-//HACK
-    if ( suitcase->content )
-    { 
-        drawParams.constantColor.g = 0;
-    }
-//END HACK
 
     MATRIX transform; 
     SVECTOR rotation = {.vx = suitcase->pitch, .vy = suitcase->yaw, .vz = 0};

@@ -14,29 +14,17 @@
 #include "dcMemory.h"
 #include "dcMisc.h"
 #include "dcCollision.h"
+#include "dcInput.h"
+
+#include "airport.h"
 
 #define CUBESIZE 196 
-
-static SDC_Vertex cube_vertices[] = {
-    { {-CUBESIZE / 2, -CUBESIZE / 2, -CUBESIZE / 2, 0} }, { {CUBESIZE / 2, -CUBESIZE / 2, -CUBESIZE / 2, 0} },
-    { {CUBESIZE / 2, CUBESIZE / 2, -CUBESIZE / 2, 0  } }, { {-CUBESIZE / 2, CUBESIZE / 2, -CUBESIZE / 2, 0  } },
-    { {-CUBESIZE / 2, -CUBESIZE / 2, CUBESIZE / 2, 0 } }, { {CUBESIZE / 2, -CUBESIZE / 2, CUBESIZE / 2, 0   } },
-    { {CUBESIZE / 2, CUBESIZE / 2, CUBESIZE / 2, 0   } }, { {-CUBESIZE / 2, CUBESIZE / 2, CUBESIZE / 2, 0   } },
-};
-
-static u_short cube_indices[] = {
-    0, 2, 1, 2, 0, 3,  1, 6, 5, 6, 1, 2,  5, 7, 4, 7, 5, 6,  4, 3, 0, 3, 4, 7,  4, 1, 5, 1, 4, 0,  6, 3, 7, 3, 6, 2,
-};
-
-static SDC_Mesh3D cubeMesh = { cube_vertices, cube_indices, NULL, 36, 8, POLIGON_VERTEX };
 
 int main(void) 
 {
     dcMemory_Init();
-    PadInit(0);
+    dcInput_Init();
     InitGeom();
-
-    SDC_Mesh3D* sphereMesh = dcMisc_generateSphereMesh(CUBESIZE, 7, 7);
 
     SDC_Render render;
     SDC_Camera camera;
@@ -50,17 +38,6 @@ int main(void)
     dcCamera_SetCameraPosition(&camera, 0, 0, distance);
     dcCamera_LookAt(&camera, &VECTOR_ZERO);
 
-    SVECTOR rotation = {0};
-    VECTOR translation = {0, 0, 0, 0};
-    MATRIX transform;
-
-    SDC_DrawParams drawParams = {
-        .tim = NULL,
-        .constantColor = {255, 255, 255},
-        .bLighting = 1,
-        .bUseConstantColor = 1
-    };
-
     CVECTOR ambientColor = {0, 0, 0};
     dcRender_SetAmbientColor(&render, &ambientColor );
 
@@ -72,52 +49,17 @@ int main(void)
     SVECTOR lightColor1 = {0, DC_ONE, 0};
     dcRender_SetLight(&render, 1, &lightDir1, &lightColor1);
 
-    while (1) {
+    StartAirport(0);
 
-        // Read pad state and move primitive
-        u_long padState = PadRead(0);
+    int elapsed = 0; 
 
-        if( _PAD(0,PADLup ) & padState )
-        {
-            translation.vy -= 32;
-        }
-        if( _PAD(0,PADLdown ) & padState )
-        {
-            translation.vy += 32;
-        }
-        if( _PAD(0,PADLright ) & padState )
-        {
-            translation.vx -= 32;
-        }
-        if( _PAD(0,PADLleft ) & padState )
-        {
-            translation.vx += 32;
-        }
+    while (1) 
+    {
+        UpdateAirport(elapsed);
+        FntPrint("GameDev Challenge Sphere Demo %d\n", elapsed);
+        RenderAirport(&render, &camera);
 
-        rotation.vy += 16;
-
-        RotMatrix(&rotation, &transform);
-        TransMatrix(&transform, &translation);
-        dcCamera_ApplyCameraTransform(&camera, &transform, &transform);
-
-        FntPrint("GameDev Challenge Sphere Demo\n");
-
-        SVECTOR rayDir = { camera.viewMatrix.m[2][0], camera.viewMatrix.m[2][1], camera.viewMatrix.m[2][2] };
-        VectorNormalSS(&rayDir, &rayDir);
-        if( dcCollision_RaySphereInteresct(&camera.position, &rayDir, &translation, CUBESIZE ) > 0 )
-        {
-            drawParams.bUseConstantColor = 1;
-            drawParams.bLighting = 1;
-            dcRender_DrawMesh(&render, sphereMesh, &transform, &drawParams);
-        }
-        else
-        {
-            drawParams.bUseConstantColor = 1;
-            drawParams.bLighting = 0;
-            dcRender_DrawMesh(&render, &cubeMesh, &transform, &drawParams );
-        }
-
-        dcRender_SwapBuffers(&render);
+        elapsed = dcRender_SwapBuffers(&render);
     }
 
     return 0;
