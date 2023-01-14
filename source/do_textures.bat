@@ -8,4 +8,10 @@ rem ..\tools\BMP2TIM\BMP2TIM.exe textures\BombaAzul.bmp data\BombaAzul.tim 4 -cl
 ..\tools\BMP2TIM\BMP2TIM.exe textures\MarihuanaAzul.bmp data\MarihuanaAzul.tim 4 -clut=48,480 -org=640,256
 ..\tools\BMP2TIM\BMP2TIM.exe textures\MarihuanaRojo.bmp data\MarihuanaRojo.tim 4 -clut=64,480 -org=640,320
 
+..\tools\BMP2TIM\BMP2TIM.exe textures\OsitoAzul.bmp data\OsitoAzul.tim 4 -clut=48,480 -org=640,256
+..\tools\BMP2TIM\BMP2TIM.exe textures\OsitoRojo.bmp data\OsitoRojo.tim 4 -clut=64,480 -org=640,320
+
+..\tools\BMP2TIM\BMP2TIM.exe textures\ZapatoAzul.bmp data\ZapatoAzul.tim 4 -clut=48,480 -org=640,256
+..\tools\BMP2TIM\BMP2TIM.exe textures\ZapatoRojo.bmp data\ZapatoRojo.tim 4 -clut=64,480 -org=640,320
+
 ..\tools\BMP2TIM\BMP2TIM.exe textures\Scanners_Texture.bmp data\Scanners_Texture.tim 4 -clut=80,480 -org=704,0

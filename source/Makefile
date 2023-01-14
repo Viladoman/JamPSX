@@ -7,6 +7,10 @@ SRCS = main.c suitcase.c airport.c image.c \
 		data/BombaRoja.tim \
 		data/MarihuanaAzul.tim \
 		data/MarihuanaRojo.tim \
+		data/OsitoAzul.tim \
+		data/OsitoRojo.tim \
+		data/ZapatoAzul.tim \
+		data/ZapatoRojo.tim \
 		data/Path_Texture.tim \
 		../third_party/common/syscalls/printf.s \
 		../third_party/common/crt0/crt0.s \

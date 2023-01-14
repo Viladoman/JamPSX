@@ -9,6 +9,7 @@
 #define MAX_SUITCASES 10
 #define MAX_SHAPES    6
 #define MAX_PATTERNS  5
+#define MAX_ITEM_CATEGORIES 4
 
 typedef struct 
 {
