@@ -1,5 +1,7 @@
 #include "airport.h"
 
+#include <stdio.h>
+
 #include "dcInput.h"
 
 #include "suitcase.h"
@@ -12,10 +14,10 @@
 #include "meshes/Scanner_P2.h"
 #include "meshes/Game_Ground.h"
 
-static int gSpawnTimerBase  = 5 * 250; 
-static int gSpawnTimerRange = 3 * 250; 
-static int gScannerWaitTime = 3 * 250; 
-static int gSuitcaseSpeed   = 1; 
+static int gSpawnTimerBase  = 300; //5 * 250; 
+static int gSpawnTimerRange = 1; //3 * 250; 
+static int gScannerWaitTime = 150; //3 * 250; 
+static int gSuitcaseSpeed   = 2; 
 
 typedef struct 
 {
@@ -153,6 +155,8 @@ void MoveSuitcase(int index, int elapsed)
     int prevNode = gAirport.gSuitcaseStates[index].prevNode; 
     int nextNode = gAirport.gSuitcaseStates[index].nextNode; 
 
+    FntPrint("Case at %d - %d - %d\n", index, prevNode, nextNode );
+
     gAirport.gSuitcaseStates[index].timer -= elapsed; 
     if (gAirport.gSuitcaseStates[index].timer <= 0)
     { 
@@ -174,7 +178,7 @@ void MoveSuitcase(int index, int elapsed)
         }
         else if ( IsOutputNode(belt,nextNode) && prevNode != nextNode )
         {
-            //We just arrives to a scanner 
+            //We just arrives to the output
 
             //TODO ~ ramonv ~ perform output check 
 
@@ -186,7 +190,7 @@ void MoveSuitcase(int index, int elapsed)
             int newPrevNode = nextNode; 
             gAirport.gSuitcaseStates[index].nextNode = newNextNode; 
 
-            if ( newNextNode == NULL)
+            if ( newNextNode < 0 )
             { 
                 //Path Termination / Despawn 
                 DestroySuitcase( GetSuitcase(index) ); 
@@ -200,7 +204,8 @@ void MoveSuitcase(int index, int elapsed)
                 long dx = nextPos.vx - prevPos.vx; 
                 long dy = nextPos.vy - prevPos.vy; 
                 long dz = nextPos.vz - prevPos.vz; 
-                long distance = csqrt(dx*dx + dy*dy + dz*dz);
+                long distance2 = dx*dx + dy*dy + dz*dz; 
+                long distance = csqrt(distance2 << 12) >> 12;
                 int timeToNext = distance / gSuitcaseSpeed; 
 
                 gAirport.gSuitcaseStates[index].timer      = timeToNext; 
@@ -214,21 +219,29 @@ void MoveSuitcase(int index, int elapsed)
     { 
         //interpolate between first position and the last 
 
-        //const int totalTime = gAirport.gSuitcaseStates[index].totalTimer;
-        //const int remainingtime =  gAirport.gSuitcaseStates[index].timer;
-        //const int factor = (256*(totalTime - remainingtime)) / totalTime; 
+        const int totalTime = gAirport.gSuitcaseStates[index].totalTimer;
+        const int remainingtime =  gAirport.gSuitcaseStates[index].timer;
+        const int factor = (256*(totalTime - remainingtime)) / totalTime; 
 
-        //VECTOR prevPos = GetNodes(belt)[prevNode];
-        //VECTOR nextPos = GetNodes(belt)[nextNode];
+        VECTOR prevPos = GetNodes(belt)[prevNode];
+        VECTOR nextPos = GetNodes(belt)[nextNode];
 
-        //Suitcase* suitcase = GetSuitcase(index);
-        //suitcase->position.vx = lerpS(prevPos.vx,nextPos.vx,factor);
-        //suitcase->position.vy = lerpS(prevPos.vy,nextPos.vy,factor);
-        //suitcase->position.vz = lerpS(prevPos.vz,nextPos.vz,factor);
+        //move positions to the positive space, interpolate and bring back 
+
+        const long positiveOffset = 4096; 
+
+        Suitcase* suitcase = GetSuitcase(index);
+        suitcase->position.vx = lerpS(prevPos.vx + positiveOffset,nextPos.vx + positiveOffset,factor) - positiveOffset;
+        suitcase->position.vy = lerpS(prevPos.vy + positiveOffset,nextPos.vy + positiveOffset,factor) - positiveOffset;
+        suitcase->position.vz = lerpS(prevPos.vz + positiveOffset,nextPos.vz + positiveOffset,factor) - positiveOffset;
+
+        //FntPrint("Intepol %d -> %d | %d\n", prevNode, nextNode, factor );
 
         //TODO ~ ramonv ~ orient yaw ( optional )
     } 
 }
+
+//bool hack = false; 
 
 void UpdateAirport(int elapsed)
 {
@@ -240,7 +253,8 @@ void UpdateAirport(int elapsed)
     }    
 
     // Trigger new spawns 
-    for (int i=0;i<2;++i)
+    //for (int i=0;i<2;++i)
+    int i=0; 
     { 
         gAirport.nextSpawn[i] -= elapsed;
 
@@ -251,6 +265,12 @@ void UpdateAirport(int elapsed)
             TrySpawnSuitcaseAtBelt(i);
         }
     }
+
+   //if ( !hack)
+   //{
+   //    hack = true; 
+   //    TrySpawnSuitcaseAtBelt(0);
+   //}
 }
 
 void RenderBackground(SDC_Render* render, SDC_Camera* camera) {

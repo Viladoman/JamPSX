@@ -52,15 +52,17 @@ int main(void)
 
     StartAirport(0);
 
-    int elapsed = 0; 
+    //int elapsed = 0; 
+    //int count = 0; 
 
     while (1) 
     {
-        UpdateAirport(elapsed);
-        FntPrint("GameDev Challenge Sphere Demo %d\n", elapsed);
+        UpdateAirport(1);
+        //FntPrint("GameDev Challenge Sphere Demo\n");
         RenderAirport(&render, &camera);
 
-        elapsed = dcRender_SwapBuffers(&render);
+        //elapsed = 
+        dcRender_SwapBuffers(&render);
     }
 
     return 0;
