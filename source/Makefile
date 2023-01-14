@@ -3,15 +3,12 @@ TYPE = ps-exe
 
 SRCS = main.c suitcase.c airport.c image.c \
 		gamestate.c main_menu.c gameover.c \
-		data/scan01.tim \
 		data/Baggage_A.tim \
 		data/Baggage_B.tim \
 		data/Baggage_C.tim \
 		data/Baggage_D.tim \
 		data/Baggage_E.tim \
-		data/hearts.tim \
-		data/clubs.tim \
-		data/palette_blue.tim data/palette_red.tim \
+		data/Path_Texture.tim \
 		../third_party/common/syscalls/printf.s \
 		../third_party/common/crt0/crt0.s \
 		dcLibPsx/src/dcMemory.c\
@@ -21,6 +18,7 @@ SRCS = main.c suitcase.c airport.c image.c \
 		dcLibPsx/src/dcInput.c\
 		dcLibPsx/src/dcCollision.c\
 		dcLibPsx/src/dcMisc.c\
+		dcLibPsx/src/dcFont.c\
 
 CPPFLAGS += -I../third_party/common
 CPPFLAGS += -I../third_party/psyq/include
