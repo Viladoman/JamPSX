@@ -4,7 +4,7 @@
 #include "dcRender.h"
 #include "dcCamera.h"
 
-void StartAirport(unsigned char level); 
+void StartAirport(); 
 void UpdateAirport(int elapsed); 
 void RenderAirport(SDC_Render* render, SDC_Camera* camera);
 

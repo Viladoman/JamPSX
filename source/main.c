@@ -17,8 +17,16 @@
 #include "dcInput.h"
 
 #include "airport.h"
+#include "main_menu.h"
+#include "gamestate.h"
 
-#define CUBESIZE 196 
+enum EGameStates {
+    AIRPORT_GAMESTATE = 0,
+    MAINMENU_GAMESTATE = 1
+};
+
+SGameState GameStates[] = { {StartAirport, UpdateAirport, RenderAirport},
+                            {InitMainMenu, UpdateMainMenu, RenderMainMenu} };
 
 int main(void) 
 {
@@ -34,7 +42,7 @@ int main(void)
     int  height = 240;
 
     CVECTOR bgColor = {60, 120, 120};
-    dcRender_Init(&render, width, height, bgColor, 4096, 8192, RENDER_MODE_PAL);
+    dcRender_Init(&render, width, height, bgColor, 4096, 8192*8, RENDER_MODE_PAL);
     dcCamera_SetScreenResolution(&camera, width, height);
     dcCamera_SetCameraPosition(&camera, 0, cameraHeight, distance);
     dcCamera_LookAt(&camera, &VECTOR_ZERO);
@@ -50,16 +58,16 @@ int main(void)
     SVECTOR lightColor1 = {DC_ONE/2, DC_ONE/2, DC_ONE/2};
     dcRender_SetLight(&render, 1, &lightDir1, &lightColor1);
 
-    StartAirport(0);
+    GameState_ChangeGameState(&GameStates[AIRPORT_GAMESTATE]);
 
     //int elapsed = 0; 
     //int count = 0; 
 
     while (1) 
     {
-        UpdateAirport(1);
-        //FntPrint("GameDev Challenge Sphere Demo\n");
-        RenderAirport(&render, &camera);
+        GameState_Update(elapsed);
+        FntPrint("GameDev Challenge Sphere Demo %d\n", elapsed);
+        GameState_Render(&render, &camera);
 
         //elapsed = 
         dcRender_SwapBuffers(&render);
