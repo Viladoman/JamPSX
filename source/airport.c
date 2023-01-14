@@ -406,10 +406,13 @@ void RenderScanners(SDC_Render* render, SDC_Camera* camera)
         char nextNode = gAirport.gSuitcaseStates[i].nextNode;
         if ( prevNode == nextNode && IsScannerNode(beltId, nextNode) )
         {
-            unsigned char thisContent = GetSuitcase(i)->content; 
+            unsigned char thisContent = GetSuitcase(i)->content;
 
-            
-            //TODO ~ ramonv ~ this suitcase is in the scanner
+            FntPrint("BELT %d has %d\n", beltId, thisContent);  
+            //TODO ~ RUBEN ~ AQUI 
+
+
+            break;
         }
     }
 }
@@ -431,7 +434,6 @@ void RenderAirport(SDC_Render* render, SDC_Camera* camera)
     char txt[256];
     sprintf(txt, "LIVES: %d SCORE: %d \n", gAirport.lives, gAirport.score);
     dcFont_Print(render, 256, 220, &color, txt);
-
 
     if ( gAirport.paused )
     {
