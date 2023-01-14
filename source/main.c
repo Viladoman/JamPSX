@@ -21,6 +21,14 @@
 #include "main_menu.h"
 #include "gamestate.h"
 
+#ifdef PAL_256 /* Do we want 256 (PAL) high ? */
+ #define FRAME_X 640 /* Assume 320 pixels wide */
+ #define FRAME_Y 256 /* Frame is 256 high. */
+#else /* Otherwise assume 240 NSTC high */
+ #define FRAME_X 640 /* Assume 320 wide display. */
+ #define FRAME_Y 240 /* Make frame 240 pixels. */
+#endif
+
 int main(void) 
 {
     dcMemory_Init();
@@ -31,11 +39,11 @@ int main(void)
     SDC_Camera camera;
     long distance = 1;
     long cameraHeight = 900;
-    int  width = 640;
-    int  height = 240;
+    int  width = FRAME_X;
+    int  height = FRAME_Y;
 
     CVECTOR bgColor = {60, 120, 120};
-    dcRender_Init(&render, width, height, bgColor, 4096, 8192*8, RENDER_MODE_PAL);
+    dcRender_Init(&render, width, height, bgColor, 4096, 8192*8, RENDER_MODE_NTCS);
     dcCamera_SetScreenResolution(&camera, width, height);
     dcCamera_SetCameraPosition(&camera, 0, cameraHeight, distance);
     dcCamera_LookAt(&camera, &VECTOR_ZERO);
@@ -56,7 +64,6 @@ int main(void)
 
     // Font
     dcFont_UseSystemFont();
-    CVECTOR fontColor = {128, 128, 128};
 
     while (1) 
     {

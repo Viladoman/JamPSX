@@ -149,6 +149,9 @@ int main(int argc, char** argv)
 	if (args_parser.GetFloatArg("-roll", roll)) {
 		roll = DEG2RAD(roll);
 	}
+	params.m_displayNodes = false;
+	args_parser.GetBoolArg("-display_nodes", params.m_displayNodes);
+
 	FbxAMatrix rotationMatrix, scaleMatrix;
 	rotationMatrix.SetROnly(FbxVector4(roll, pitch, yaw, 1.0f));
 	scaleMatrix.SetS(FbxVector4(scaleValue, scaleValue, scaleValue, 1.0f));

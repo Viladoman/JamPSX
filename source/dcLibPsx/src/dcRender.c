@@ -59,6 +59,10 @@ void dcRender_Init(SDC_Render* render, int width, int height, CVECTOR bgColor, i
     SetDefDispEnv( &render->displayEnvironment[0], 0, height, width, height );
     SetDefDispEnv( &render->displayEnvironment[1], 0, 0,      width, height );
 
+    /* Apply offsets to display to centre the display */
+    // render->displayEnvironment[0].screen.x = render->displayEnvironment[1].screen.x = SCREEN_X;
+    // render->displayEnvironment[0].screen.y = render->displayEnvironment[1].screen.y = SCREEN_Y;
+
     setRGB0( &render->drawEnvironment[0], bgColor.r, bgColor.g, bgColor.b );
     render->drawEnvironment[0].isbg = 1;
     render->drawEnvironment[0].dtd = 1;
@@ -75,10 +79,6 @@ void dcRender_Init(SDC_Render* render, int width, int height, CVECTOR bgColor, i
 	// Set screen depth (basically FOV control, W/2 works best)
 	SetGeomScreen(width >> 1);
     SetVideoMode(mode==RENDER_MODE_NTCS?MODE_NTSC:MODE_PAL);
-    if(mode == RENDER_MODE_PAL) {
-        render->displayEnvironment[0].screen.y += 8;
-        render->displayEnvironment[1].screen.y += 8;
-    }
 
     //Debug font (to remove)
     FntLoad(960, 256);

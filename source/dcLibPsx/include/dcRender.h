@@ -6,6 +6,16 @@
 #include <libgpu.h>
 #include <libgs.h>
 
+//#define PAL_256
+
+#ifdef PAL_256 /* Do we want 256 (PAL) high ? */
+ #define SCREEN_X 0 /* Offset display by 0 in X */
+ #define SCREEN_Y 24 /* Offset display by 24 in Y */
+#else /* Otherwise assume 240 NSTC high */
+ #define SCREEN_X 0 /* Offset X by 0. */
+ #define SCREEN_Y 28 /* Offset Y by 28 pixels. */
+#endif
+
 typedef struct {
 
     int       width;

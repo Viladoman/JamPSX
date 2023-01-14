@@ -7,13 +7,13 @@
 #include "dcCamera.h"
 
 #define MAX_SUITCASES 20
-#define MAX_SHAPES    5
+#define MAX_SHAPES    6
 #define MAX_PATTERNS  5
 
 typedef struct 
 {
     SDC_Mesh3D*    mesh;
-    TIM_IMAGE*     pattern;
+    CVECTOR        color;
     short          yaw; 
     short          pitch; 
     VECTOR         position;  

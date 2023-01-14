@@ -3,11 +3,10 @@ TYPE = ps-exe
 
 SRCS = main.c suitcase.c airport.c image.c \
 		gamestate.c main_menu.c gameover.c \
-		data/Baggage_A.tim \
-		data/Baggage_B.tim \
-		data/Baggage_C.tim \
-		data/Baggage_D.tim \
-		data/Baggage_E.tim \
+		data/BombaAzul.tim \
+		data/BombaRoja.tim \
+		data/MarihuanaAzul.tim \
+		data/MarihuanaRojo.tim \
 		data/Path_Texture.tim \
 		../third_party/common/syscalls/printf.s \
 		../third_party/common/crt0/crt0.s \

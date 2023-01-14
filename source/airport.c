@@ -31,6 +31,7 @@ static int gSuitcaseSpeed   = 4;
 static int gStartLives      = 50; 
 
 extern unsigned long _binary_data_Path_Texture_tim_start[];
+extern unsigned long _binary_data_Path_Texture_tim_start[];
 
 typedef struct 
 {
@@ -372,7 +373,9 @@ void RenderBackground(SDC_Render* render, SDC_Camera* camera) {
     dcRender_DrawMesh(render, &Scanner_P1_Mesh, &MVP, &drawParams );
     dcRender_DrawMesh(render, &Scanner_P2_Mesh, &MVP, &drawParams );
 
+    drawParams.tim = &gAirport.pathTexture;
     dcRender_DrawMesh(render, &ScannerQuad_P1_Mesh, &MVP, &drawParams );
+    drawParams.tim = &gAirport.pathTexture;
     dcRender_DrawMesh(render, &ScannerQuad_P2_Mesh, &MVP, &drawParams );
 
     drawParams.tim = &gAirport.pathTexture;

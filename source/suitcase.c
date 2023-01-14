@@ -10,6 +10,7 @@
 #include "meshes/Baggage_C.h"
 #include "meshes/Baggage_D.h"
 #include "meshes/Baggage_E.h"
+#include "meshes/Baggage_Triforce.h"
 
 /* placeholder */
 
@@ -30,15 +31,8 @@ static SDC_Mesh3D cubeMesh = { cube_vertices, cube_indices, NULL, 36, 8, POLIGON
 
 /* end placeholder */
 
-extern unsigned long _binary_data_Baggage_A_tim_start[];
-extern unsigned long _binary_data_Baggage_B_tim_start[];
-extern unsigned long _binary_data_Baggage_C_tim_start[];
-extern unsigned long _binary_data_Baggage_D_tim_start[];
-extern unsigned long _binary_data_Baggage_E_tim_start[];
-
-SDC_Mesh3D* gSuitcaseShapes[MAX_SHAPES] = { &Baggage_A_Mesh, &Baggage_B_Mesh, &Baggage_C_Mesh, &Baggage_D_Mesh, &Baggage_E_Mesh }; //TODO ~ ramonv ~ to be implemented
-TIM_IMAGE gSuitcasesPatterns[MAX_PATTERNS];
-unsigned long* gSuitcasesTextures[MAX_PATTERNS] = { _binary_data_Baggage_A_tim_start, _binary_data_Baggage_B_tim_start, _binary_data_Baggage_C_tim_start, _binary_data_Baggage_D_tim_start, _binary_data_Baggage_E_tim_start};
+SDC_Mesh3D* gSuitcaseShapes[MAX_SHAPES] = { &Baggage_A_Mesh, &Baggage_B_Mesh, &Baggage_C_Mesh, &Baggage_D_Mesh, &Baggage_E_Mesh, &Baggage_Triforce_Mesh }; //TODO ~ ramonv ~ to be implemented
+CVECTOR gSuitcasesColors[MAX_PATTERNS] = { {127, 0, 0},{127, 127, 0},{127, 0, 127},{0, 127, 0},{0, 127, 127} };
 
 Suitcase gSuitcases[MAX_SUITCASES];
 bool     gSuitcasesActives[MAX_SUITCASES];
@@ -48,11 +42,6 @@ void ResetSuitcases()
     for (int i = 0; i< MAX_SUITCASES; ++i)
     { 
         gSuitcasesActives[i] = false; 
-    }
-
-    for (int i = 0; i< MAX_PATTERNS; ++i)
-    {
-        dcRender_LoadTexture(&gSuitcasesPatterns[i], gSuitcasesTextures[i]);
     }
 } 
 
@@ -112,14 +101,14 @@ void SetupSuitcase(Suitcase* suitcase, unsigned int shape, unsigned int pattern,
 {
     suitcase->content = content; 
     suitcase->mesh = gSuitcaseShapes[shape % MAX_SHAPES];
-    suitcase->pattern = &gSuitcasesPatterns[pattern % MAX_PATTERNS];
+    suitcase->color = gSuitcasesColors[pattern % MAX_PATTERNS];
 }
 
 void RenderSuitcase(SDC_Render* render, SDC_Camera* camera, Suitcase* suitcase)
 {
     SDC_DrawParams drawParams = {
-        .tim = suitcase->pattern,
-        .constantColor = {255, 255, 255},
+        .tim = NULL,
+        .constantColor = suitcase->color,
         .bLighting = 1,
         .bUseConstantColor = 1
     };
