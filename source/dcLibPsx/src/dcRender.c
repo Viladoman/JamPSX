@@ -6,6 +6,7 @@
 #include <memory.h>
 
 int totalPrimitives = 0;
+int totalTriangles = 0;
 
 void _dcRender_IncPrimitive(SDC_Render* render, size_t offset)
 {
@@ -19,12 +20,13 @@ void _dcRender_IncPrimitive(SDC_Render* render, size_t offset)
     ++totalPrimitives;
 }
 
-void _dcRender_ReportPrimitivesSize(SDC_Render* render) {
+void dcRender_ReportPrimitivesSize(SDC_Render* render) {
     u_char* base_ptr = render->primitives[render->doubleBufferIndex];
     size_t nbytes = sizeof(u_char) * render->bytesPrimitives;
     size_t curr_offset = render->nextPrimitive - base_ptr; 
-    printf("Primitives bytes '%d/%d' totalPrimitives %d\n", curr_offset, nbytes, totalPrimitives);
+    printf("Primitives bytes '%d/%d Triangles '%d' totalPrimitives %d\n", curr_offset, nbytes, totalPrimitives, totalTriangles);
     totalPrimitives = 0;
+    totalTriangles = 0;
 }
 
 void dcRender_Init(SDC_Render* render, int width, int height, CVECTOR bgColor, int orderingTableCount, int bytesPrimitives, EDC_Mode mode) {
@@ -118,8 +120,6 @@ void dcRender_SetAmbientColor(SDC_Render* render, CVECTOR* ambientColor)
 }
 
 int dcRender_SwapBuffers(SDC_Render* render) {
-    // _dcRender_ReportPrimitivesSize(render);
-    
     DrawSync( 0 );
     int syncValue = VSync( 0 );
     SetDispMask( 1 );
@@ -196,7 +196,8 @@ void dcRender_DrawMesh(SDC_Render* render,  SDC_Mesh3D* mesh, MATRIX* transform,
         assert(index0 < mesh->numVertices);
         assert(index1 < mesh->numVertices);
         assert(index2 < mesh->numVertices);
-        void *poly = render->nextPrimitive;  
+        void *poly = render->nextPrimitive;
+        totalTriangles += 3;  
 
         CVECTOR c0, c1, c2;  
         CVECTOR curr_color = {255, 255, 255};

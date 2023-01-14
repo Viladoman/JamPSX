@@ -63,6 +63,7 @@ int main(void)
         GameState_Update(1);
         GameState_Render(&render, &camera);
 
+        dcRender_ReportPrimitivesSize(&render);
         dcRender_SwapBuffers(&render);
     }
 
