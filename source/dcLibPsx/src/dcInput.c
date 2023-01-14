@@ -1,6 +1,10 @@
 #include "dcInput.h"
 
-void dcInput_Initialize(SDC_Input *input, int padId) {
+void dcInput_Init() {
+    PadInit(0);
+}
+
+void dcInput_InitializePad(SDC_Input *input, int padId) {
     input->padId = padId;
 }
 
