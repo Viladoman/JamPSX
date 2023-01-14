@@ -24,11 +24,11 @@
 
 #include "meshes/Plane001.h"
 
-static int gSpawnTimerBase  = 300; //5 * 250; 
-static int gSpawnTimerRange = 100; //3 * 250; 
-static int gScannerWaitTime = 100; //3 * 250; 
+static int gSpawnTimerBase  = 100; //5 * 250; 
+static int gSpawnTimerRange = 1; //3 * 250; 
+static int gScannerWaitTime = 50; //3 * 250; 
 static int gSuitcaseSpeed   = 6; 
-static int gStartLives      = 5; 
+static int gStartLives      = 50; 
 
 extern unsigned long _binary_data_Path_Texture_tim_start[];
 
@@ -397,6 +397,23 @@ void RenderBackground(SDC_Render* render, SDC_Camera* camera) {
     drawParams.tim = NULL;
 }
 
+void RenderScanners(SDC_Render* render, SDC_Camera* camera)
+{
+    for (int i=0;i<MAX_SUITCASES;++i)
+    {
+        unsigned char beltId = gAirport.gSuitcaseStates[i].beltId;
+        char prevNode = gAirport.gSuitcaseStates[i].prevNode;
+        char nextNode = gAirport.gSuitcaseStates[i].nextNode;
+        if ( prevNode == nextNode && IsScannerNode(beltId, nextNode) )
+        {
+            unsigned char thisContent = GetSuitcase(i)->content; 
+
+            
+            //TODO ~ ramonv ~ this suitcase is in the scanner
+        }
+    }
+}
+
 void RenderAirport(SDC_Render* render, SDC_Camera* camera)
 {
     for (int i=0;i<2;++i)
@@ -406,6 +423,8 @@ void RenderAirport(SDC_Render* render, SDC_Camera* camera)
 
     RenderBackground(render, camera); 
     RenderSuitcases(render, camera);
+
+    RenderScanners(render, camera);
 
     //Render UI / Score
     CVECTOR color = {127, 127, 127};
