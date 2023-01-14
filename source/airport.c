@@ -28,7 +28,7 @@ static int gSpawnTimerBase  = 300; //5 * 250;
 static int gSpawnTimerRange = 100; //3 * 250; 
 static int gScannerWaitTime = 100; //3 * 250; 
 static int gSuitcaseSpeed   = 6; 
-static int gStartLives      = 50; 
+static int gStartLives      = 5; 
 
 extern unsigned long _binary_data_Path_Texture_tim_start[];
 
@@ -55,28 +55,15 @@ typedef struct
     int score; 
     int lives; 
 
+    bool paused; 
+
 } Airport;
 
 static Airport gAirport; 
-/*
-VECTOR gNodesA[] = { 
-    {-957,81,-390},
-    {-402,81,-390},
-    {-27,81,-390},
-    {-27,81,-211},
-    {-166,81,-169},
-    {-166,81,192},
-    {124,81,212},
-    {167,81,394},
-    {678,81,394},
-    {934,81,394}
-};
 
-VECTOR gNodesB[] = { {-1000,0,0}, {1000,0,0} };
-*/
 VECTOR gNodesA[] = {
 {-957, 81, -390}, // _NodeA_01_0_0
-{-402, 81, -390}, // _NodeA_02_0_1
+{-470, 81, -390}, // _NodeA_02_0_1
 {-60, 81, -390}, // _NodeA_03_0_2
 {-32, 81, -378}, // _NodeA_03_0_3
 {-20, 81, -351}, // _NodeA_03_0_4
@@ -100,7 +87,7 @@ VECTOR gNodesA[] = {
 };
 VECTOR gNodesB[] = {
 {957, 12, -396}, // _NodeB_01_0_001
-{400, 12, -400}, // _NodeB_01_0_002
+{545, 20, -400}, // _NodeB_01_0_002
 {169, 12, -400}, // _NodeB_01_0_003
 {144, 12, -386}, // _NodeB_01_0_004
 {131, 12, -359}, // _NodeB_01_0_005
@@ -164,6 +151,7 @@ void StartAirport()
 
     gAirport.lives = gStartLives; 
     gAirport.score = 0; 
+    gAirport.paused = false;
 
     CreateGraph(); 
 
@@ -257,8 +245,7 @@ void MoveSuitcase(int index, int elapsed)
         return;
     }
     
-    FntPrint("Case %d is %d \n", index, GetSuitcase(index)->content );  
-    
+    //FntPrint("Case %d is %d \n", index, GetSuitcase(index)->content );  
 
     int belt     = gAirport.gSuitcaseStates[index].beltId; 
     int prevNode = gAirport.gSuitcaseStates[index].prevNode; 
@@ -346,29 +333,22 @@ void MoveSuitcase(int index, int elapsed)
 
 void UpdateAirport(int elapsed)
 {
-    int hackCount = 0; 
-    for (int i=0;i<MAX_SUITCASES;++i)
+    //Update pause
+    if ( dcInput_BecomesPressed(&gAirport.input[0], PADstart) || dcInput_BecomesPressed(&gAirport.input[1], PADstart))
+    {
+        gAirport.paused = !gAirport.paused;
+    }
+
+    if ( gAirport.paused )
     { 
-        if ( IsSuitcaseActive(i) )
-        {
-             ++hackCount;
-        }
-    }   
+        return; 
+    }
 
     // Move current suitcases
     for (int i=0;i<MAX_SUITCASES;++i)
     { 
         MoveSuitcase(i, elapsed); 
     }    
-
-    int hackCount2 = 0; 
-    for (int i=0;i<MAX_SUITCASES;++i)
-    { 
-        if ( IsSuitcaseActive(i) )
-        {
-             ++hackCount2;
-        }
-    }  
 
     // Trigger new spawns 
     for (int i=0;i<2;++i)
@@ -402,10 +382,6 @@ void RenderBackground(SDC_Render* render, SDC_Camera* camera) {
     MATRIX MVP;
     dcCamera_ApplyCameraTransform(camera, &transform, &MVP);
 
-    // dcRender_DrawMesh(render, &Game_Ground_P1_Mesh, &MVP, &drawParams );
-    // dcRender_DrawMesh(render, &Game_Ground_P2_Mesh, &MVP, &drawParams );
-    // dcRender_DrawMesh(render, &Plane001_Mesh, &MVP, &drawParams );
-
     dcRender_DrawMesh(render, &Exit_P1_Mesh, &MVP, &drawParams );
     dcRender_DrawMesh(render, &Exit_P2_Mesh, &MVP, &drawParams );
 
@@ -436,5 +412,10 @@ void RenderAirport(SDC_Render* render, SDC_Camera* camera)
     char txt[256];
     sprintf(txt, "LIVES: %d SCORE: %d \n", gAirport.lives, gAirport.score);
     dcFont_Print(render, 256, 220, &color, txt);
-    // FntPrint("Lives: %d Score: %d \n", gAirport.lives, gAirport.score);          
+
+
+    if ( gAirport.paused )
+    {
+        dcFont_Print(render, 256, 200, &color, "PAUSED");
+    }
 }
