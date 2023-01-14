@@ -93,7 +93,7 @@ int main(int argc, char** argv)
 		printf("-pitch   <value in degrees> OPTIONAL default:0\n");
 		printf("-roll    <value in degrees> OPTIONAL default:0\n");
 		printf("Example command line:\n");
-		printf("    FBX2PSX.exe -fbx teapod.fbx -outdir D:\\code\\psxdev\\jam\\PsxJamBootstrap\\source -invertY 1 -vertex_format 1");
+		printf("    FBX2PSX.exe -fbx teapod.fbx -outdir D:\\code\\psxdev\\jam\\PsxJamBootstrap\\source -vertex_format 1");
 		return 0;
 	}
 	TArgsParser args_parser;

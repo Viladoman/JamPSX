@@ -73,6 +73,10 @@ void dcRender_Init(SDC_Render* render, int width, int height, CVECTOR bgColor, i
 	// Set screen depth (basically FOV control, W/2 works best)
 	SetGeomScreen(width >> 1);
     SetVideoMode(mode==RENDER_MODE_NTCS?MODE_NTSC:MODE_PAL);
+    if(mode == RENDER_MODE_PAL) {
+        render->displayEnvironment[0].screen.y += 8;
+        render->displayEnvironment[1].screen.y += 8;
+    }
 
     //Debug font (to remove)
     FntLoad(960, 256);

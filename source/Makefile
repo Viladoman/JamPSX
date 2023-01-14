@@ -1,7 +1,11 @@
 TARGET = MAIN
 TYPE = ps-exe
 
-SRCS = main.c \
+SRCS = main.c image.c \
+		data/scan01.tim \
+		data/hearts.tim \
+		data/clubs.tim \
+		data/palette_blue.tim data/palette_red.tim \
 		../third_party/common/syscalls/printf.s \
 		../third_party/common/crt0/crt0.s \
 		dcLibPsx/src/dcMemory.c\
@@ -15,6 +19,7 @@ SRCS = main.c \
 CPPFLAGS += -I../third_party/common
 CPPFLAGS += -I../third_party/psyq/include
 CPPFLAGS += -I./dcLibPsx/include
+CPPFLAGS += -Wno-unused-variable
 LDFLAGS += -L../third_party/psyq/lib
 LDFLAGS += -Wl,--start-group
 LDFLAGS += -lapi
