@@ -28,25 +28,26 @@ int main(void)
 
     SDC_Render render;
     SDC_Camera camera;
-    long distance = 800;
+    long distance = 1;
+    long cameraHeight = 900;
     int  width = 640;
     int  height = 240;
 
     CVECTOR bgColor = {60, 120, 120};
     dcRender_Init(&render, width, height, bgColor, 4096, 8192, RENDER_MODE_PAL);
     dcCamera_SetScreenResolution(&camera, width, height);
-    dcCamera_SetCameraPosition(&camera, 0, 0, distance);
+    dcCamera_SetCameraPosition(&camera, 0, cameraHeight, distance);
     dcCamera_LookAt(&camera, &VECTOR_ZERO);
 
     CVECTOR ambientColor = {0, 0, 0};
     dcRender_SetAmbientColor(&render, &ambientColor );
 
     SVECTOR lightDir = {DC_ONE, 0, 0 };
-    SVECTOR lightColor = {DC_ONE, 0, 0};
+    SVECTOR lightColor = {DC_ONE, DC_ONE, DC_ONE};
     dcRender_SetLight(&render, 0, &lightDir, &lightColor);
 
-    SVECTOR lightDir1 = {0, -DC_ONE, 0 };
-    SVECTOR lightColor1 = {0, DC_ONE, 0};
+    SVECTOR lightDir1 = {0, DC_ONE, 0 };
+    SVECTOR lightColor1 = {DC_ONE/2, DC_ONE/2, DC_ONE/2};
     dcRender_SetLight(&render, 1, &lightDir1, &lightColor1);
 
     StartAirport(0);

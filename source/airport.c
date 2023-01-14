@@ -4,6 +4,14 @@
 
 #include "suitcase.h"
 
+#include "meshes/Exit_P1.h"
+#include "meshes/Exit_P2.h"
+#include "meshes/Path_P1.h"
+#include "meshes/Path_P2.h"
+#include "meshes/Scanner_P1.h"
+#include "meshes/Scanner_P2.h"
+#include "meshes/Game_Ground.h"
+
 static int gSpawnTimerBase  = 5 * 250; 
 static int gSpawnTimerRange = 3 * 250; 
 static int gScannerWaitTime = 3 * 250; 
@@ -243,9 +251,37 @@ void UpdateAirport(int elapsed)
     }
 }
 
+void RenderBackground(SDC_Render* render, SDC_Camera* camera) {
+    SDC_DrawParams drawParams = {
+        .tim = NULL,
+        .constantColor = {255, 255, 255},
+        .bLighting = 1,
+        .bUseConstantColor = 1
+    };
+
+    SVECTOR rotation = {0};
+    VECTOR translation = {0, 0, 0, 0};
+    MATRIX transform;
+
+    RotMatrix(&rotation, &transform);
+    TransMatrix(&transform, &translation);
+
+    MATRIX MVP;
+    dcCamera_ApplyCameraTransform(camera, &transform, &MVP);
+
+    dcRender_DrawMesh(render, &Exit_P1_Mesh, &MVP, &drawParams );
+    dcRender_DrawMesh(render, &Exit_P2_Mesh, &MVP, &drawParams );
+
+    dcRender_DrawMesh(render, &Scanner_P1_Mesh, &MVP, &drawParams );
+    dcRender_DrawMesh(render, &Scanner_P2_Mesh, &MVP, &drawParams );
+
+    dcRender_DrawMesh(render, &Path_P1_Mesh, &MVP, &drawParams );
+    dcRender_DrawMesh(render, &Path_P2_Mesh, &MVP, &drawParams );
+}
+
 void RenderAirport(SDC_Render* render, SDC_Camera* camera)
 {
-    //RenderBackground(); 
+    RenderBackground(render, camera); 
 
     RenderSuitcases(render, camera);
 }
