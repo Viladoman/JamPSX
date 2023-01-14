@@ -4,14 +4,27 @@
 #include <libgpu.h>
 #include <libgs.h>
 
+#include "airport.h"
+#include "main_menu.h"
+#include "gameover.h"
+
 SGameState *CurrentGameState = NULL;
 
-void GameState_ChangeGameState(SGameState *NewGameState) {
+SGameState GameStates[] = { {StartAirport, UpdateAirport, RenderAirport},
+                            {InitMainMenu, UpdateMainMenu, RenderMainMenu}, 
+                            {InitGameOver, UpdateGameOver, RenderGameOver} };
+
+void GameState_ChangeGameStateEx(SGameState *NewGameState) {
     CurrentGameState = NewGameState;
     if(!CurrentGameState)
         return;
 
     CurrentGameState->InitFunc();
+}
+
+void GameState_ChangeGameState(enum EGameStates state)
+{
+    GameState_ChangeGameStateEx(&GameStates[state]);
 }
 
 void GameState_Update(int elapsed) {

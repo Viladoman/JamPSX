@@ -5,6 +5,7 @@
 #include "dcInput.h"
 
 #include "suitcase.h"
+#include "gamestate.h"
 
 #include "meshes/Exit_P1.h"
 #include "meshes/Exit_P2.h"
@@ -18,7 +19,7 @@ static int gSpawnTimerBase  = 300; //5 * 250;
 static int gSpawnTimerRange = 1; //3 * 250; 
 static int gScannerWaitTime = 100; //3 * 250; 
 static int gSuitcaseSpeed   = 4; 
-static int gStartLives      = 3; 
+static int gStartLives      = 50; 
 
 typedef struct 
 {
@@ -66,6 +67,11 @@ VECTOR* GetNodes(unsigned char beltId)
     return beltId == 0? gNodesA : gNodesB;
 }
 
+int GetAirportScore()
+{
+    return gAirport.score; 
+}
+
 //BeltNode 
 
 int GetRandomNumber(int base, int range) 
@@ -80,7 +86,7 @@ int lerpS(int start, int dest, unsigned pos) {
 void CreateGraph()
 {
     gAirport.beltSize[0] = sizeof(gNodesA)/sizeof(gNodesA[0]);
-    gAirport.beltSize[1] = 2; 
+    gAirport.beltSize[1] = sizeof(gNodesB)/sizeof(gNodesB[0]); 
 
     gAirport.scanners[0] = 1;
     gAirport.scanners[1] = 1;
@@ -174,6 +180,10 @@ void ValidateSuitcase(int index)
     else 
     { 
         --gAirport.lives;
+        if ( gAirport.lives <= 0 )
+        { 
+            GameState_ChangeGameState(GAMEOVER_GAMESTATE);
+        }
     }
 }
 

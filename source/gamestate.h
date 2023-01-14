@@ -4,13 +4,20 @@
 #include "dcRender.h"
 #include "dcCamera.h"
 
+enum EGameStates {
+    AIRPORT_GAMESTATE = 0,
+    MAINMENU_GAMESTATE = 1, 
+    GAMEOVER_GAMESTATE = 2,
+};
+
 typedef struct {
     void (*InitFunc)();
     void (*UpdateFunc)(int);
     void (*RenderFunc)(SDC_Render* render, SDC_Camera* camera);
 } SGameState;
 
-void GameState_ChangeGameState(SGameState *NewGameState);
+void GameState_ChangeGameStateEx(SGameState *NewGameState);
+void GameState_ChangeGameState(enum EGameStates state);
 void GameState_Update(int elapsed);
 void GameState_Render(SDC_Render* render, SDC_Camera* camera);
 
