@@ -15,6 +15,7 @@
 #include "dcMisc.h"
 #include "dcCollision.h"
 #include "dcInput.h"
+#include "dcFont.h"
 
 #include "airport.h"
 #include "main_menu.h"
@@ -60,16 +61,15 @@ int main(void)
 
     GameState_ChangeGameState(&GameStates[AIRPORT_GAMESTATE]);
 
-    //int elapsed = 0; 
-    //int count = 0; 
+    // Font
+    dcFont_UseSystemFont();
+    CVECTOR fontColor = {128, 128, 128};
 
     while (1) 
     {
         GameState_Update(1);
-        //FntPrint("GameDev Challenge Sphere Demo %d\n", elapsed);        
         GameState_Render(&render, &camera);
 
-        //elapsed = 
         dcRender_SwapBuffers(&render);
     }
 

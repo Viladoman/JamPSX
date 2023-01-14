@@ -3,6 +3,7 @@
 #include <stdio.h>
 
 #include "dcInput.h"
+#include "dcFont.h"
 
 #include "suitcase.h"
 
@@ -10,15 +11,25 @@
 #include "meshes/Exit_P2.h"
 #include "meshes/Path_P1.h"
 #include "meshes/Path_P2.h"
+
 #include "meshes/Scanner_P1.h"
 #include "meshes/Scanner_P2.h"
-#include "meshes/Game_Ground.h"
+
+#include "meshes/Game_Ground_P1.h"
+#include "meshes/Game_Ground_P2.h"
+
+#include "meshes/ScannerQuad_P1.h"
+#include "meshes/ScannerQuad_P2.h"
+
+#include "meshes/Plane001.h"
 
 static int gSpawnTimerBase  = 300; //5 * 250; 
 static int gSpawnTimerRange = 1; //3 * 250; 
 static int gScannerWaitTime = 100; //3 * 250; 
 static int gSuitcaseSpeed   = 4; 
 static int gStartLives      = 3; 
+
+extern unsigned long _binary_data_Path_Texture_tim_start[];
 
 typedef struct 
 {
@@ -36,6 +47,7 @@ typedef struct
     int outputs[2];
     int nextSpawn[2];
     unsigned char beltSize[2];
+    TIM_IMAGE pathTexture;
 
     SuitcaseState gSuitcaseStates[MAX_SUITCASES];
 
@@ -104,6 +116,8 @@ void StartAirport()
     { 
         gAirport.nextSpawn[i] = GetRandomNumber(gSpawnTimerBase,gSpawnTimerRange);
     }
+    // load textures
+    dcRender_LoadTexture(&gAirport.pathTexture, _binary_data_Path_Texture_tim_start);
 }
 
 void TrySpawnSuitcaseAtBelt(unsigned char beltId)
@@ -320,14 +334,23 @@ void RenderBackground(SDC_Render* render, SDC_Camera* camera) {
     MATRIX MVP;
     dcCamera_ApplyCameraTransform(camera, &transform, &MVP);
 
+    // dcRender_DrawMesh(render, &Game_Ground_P1_Mesh, &MVP, &drawParams );
+    // dcRender_DrawMesh(render, &Game_Ground_P2_Mesh, &MVP, &drawParams );
+    // dcRender_DrawMesh(render, &Plane001_Mesh, &MVP, &drawParams );
+
     dcRender_DrawMesh(render, &Exit_P1_Mesh, &MVP, &drawParams );
     dcRender_DrawMesh(render, &Exit_P2_Mesh, &MVP, &drawParams );
 
     dcRender_DrawMesh(render, &Scanner_P1_Mesh, &MVP, &drawParams );
     dcRender_DrawMesh(render, &Scanner_P2_Mesh, &MVP, &drawParams );
 
+    dcRender_DrawMesh(render, &ScannerQuad_P1_Mesh, &MVP, &drawParams );
+    dcRender_DrawMesh(render, &ScannerQuad_P2_Mesh, &MVP, &drawParams );
+
+    drawParams.tim = &gAirport.pathTexture;
     dcRender_DrawMesh(render, &Path_P1_Mesh, &MVP, &drawParams );
     dcRender_DrawMesh(render, &Path_P2_Mesh, &MVP, &drawParams );
+    drawParams.tim = NULL;
 }
 
 void RenderAirport(SDC_Render* render, SDC_Camera* camera)
@@ -341,5 +364,9 @@ void RenderAirport(SDC_Render* render, SDC_Camera* camera)
     RenderSuitcases(render, camera);
 
     //Render UI / Score
-    FntPrint("Lives: %d Score: %d \n", gAirport.lives, gAirport.score);          
+    CVECTOR color = {127, 127, 127};
+    char txt[256];
+    sprintf(txt, "LIVES: %d SCORE: %d \n", gAirport.lives, gAirport.score);
+    dcFont_Print(render, 256, 220, &color, txt);
+    // FntPrint("Lives: %d Score: %d \n", gAirport.lives, gAirport.score);          
 }
