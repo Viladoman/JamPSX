@@ -17,38 +17,48 @@ static int gSpawnTimerRange = 3 * 250;
 static int gScannerWaitTime = 3 * 250; 
 static int gSuitcaseSpeed   = 1; 
 
-struct BeltNodeDef
-{ 
-    VECTOR*             position; 
-    struct BeltNodeDef* next[2];
-}; 
-typedef struct BeltNodeDef BeltNode; 
-
 typedef struct 
 {
-    BeltNode* prevNode; 
-    BeltNode* nextNode;
-    int       timer; 
-    int       totalTimer; 
+    unsigned char beltId; 
+    unsigned char prevNode; 
+    unsigned char nextNode;
+    int           timer; 
+    int           totalTimer; 
 } SuitcaseState;
 
 typedef struct
 {
     SDC_Input input[2];
     unsigned char level; 
-    BeltNode* spawnPoints[2];
-    BeltNode* scanners[2];
-    BeltNode* outputs[2];
-    int       nextSpawn[2];
+    int scanners[2];
+    int outputs[2];
+    int nextSpawn[2];
+    unsigned char beltSize[2];
 
     SuitcaseState gSuitcaseStates[MAX_SUITCASES];
 } Airport;
 
 static Airport gAirport; 
 
-VECTOR gNodesA[] = { {-1000,0,-100}, {1000,0,100} };
+VECTOR gNodesA[] = { 
+    {-957,81,-390},
+    {-402,81,-390},
+    {-27,81,-390},
+    {-27,81,-211},
+    {-166,81,-169},
+    {-166,81,192},
+    {124,81,212},
+    {167,81,394},
+    {678,81,394},
+    {934,81,394}
+};
+
 VECTOR gNodesB[] = { {-1000,0,0}, {1000,0,0} };
-BeltNode gNodeStorage[4]; 
+
+VECTOR* GetNodes(unsigned char beltId)
+{ 
+    return beltId == 0? gNodesA : gNodesB;
+}
 
 //BeltNode 
 
@@ -65,21 +75,14 @@ void CreateGraph()
 {
     //TODO ~ ramonv ~ manual graph 
 
-    gNodeStorage[0].next[1] = NULL;
-    gNodeStorage[1].next[1] = NULL;
-    gNodeStorage[2].next[1] = NULL;
-    gNodeStorage[3].next[1] = NULL;
+    gAirport.beltSize[0] = sizeof(gNodesA)/sizeof(gNodesA[0]);
+    gAirport.beltSize[1] = 2; 
 
-    gNodeStorage[0].position = &gNodesA[0];
-    gNodeStorage[1].position = &gNodesA[1];
-    gNodeStorage[2].position = &gNodesB[0];
-    gNodeStorage[3].position = &gNodesB[1];
+    gAirport.scanners[0] = 1;
+    gAirport.scanners[1] = 1;
 
-    gNodeStorage[0].next[0] = &(gNodeStorage[1]);
-    gNodeStorage[2].next[1] = &(gNodeStorage[3]);
-
-    gAirport.spawnPoints[0] = &gNodeStorage[0];
-    gAirport.spawnPoints[1] = &gNodeStorage[2];
+    gAirport.outputs[0] = 1;
+    gAirport.outputs[1] = 1;
 }
 
 void StartAirport()
@@ -104,47 +107,39 @@ void TrySpawnSuitcaseAtBelt(unsigned char beltId)
     { 
         //Setup Suitcase 
         //TODO ~ ramonv ~ difficulty adjustment and shuffles 
-        SetupSuitcase(newSuitcase, GetRandomNumber(0,2), GetRandomNumber(0,2), GetRandomNumber(0,2));
+        SetupSuitcase(newSuitcase, GetRandomNumber(0,MAX_SHAPES), GetRandomNumber(0,MAX_PATTERNS), GetRandomNumber(0,2));
 
         const int suitcaseIndex = GetSuitcaseIndex(newSuitcase);
-        gAirport.gSuitcaseStates[suitcaseIndex].prevNode = NULL;
-        gAirport.gSuitcaseStates[suitcaseIndex].nextNode = gAirport.spawnPoints[beltId];
+        gAirport.gSuitcaseStates[suitcaseIndex].beltId   = beltId;
+        gAirport.gSuitcaseStates[suitcaseIndex].prevNode = -1;
+        gAirport.gSuitcaseStates[suitcaseIndex].nextNode = 0;
         gAirport.gSuitcaseStates[suitcaseIndex].timer    = 0; //force recompute
 
         //Locate initial suitcase position
         //newSuitcase->yaw = GetRandomNumber();
-        newSuitcase->position = *gAirport.spawnPoints[beltId]->position;
+        newSuitcase->position = GetNodes(beltId)[0];
     }
 }
 
-bool IsSpawnNode(BeltNode* node)
+bool IsSpawnNode(int nodeId)
 {
-    return node && ( node == gAirport.spawnPoints[0] || node == gAirport.spawnPoints[1] );
+    return nodeId == 0;
 }
 
-bool IsScannerNode(BeltNode* node)
+bool IsScannerNode(int beltId, int nodeId )
 {
-    return node && ( node == gAirport.scanners[0] || node == gAirport.scanners[1] );
+    return gAirport.scanners[beltId] == nodeId;
 }
 
-bool IsOutputNode(BeltNode* node)
+bool IsOutputNode(int beltId, int nodeId)
 {
-    return node && ( node == gAirport.outputs[0] || node == gAirport.outputs[1] );
+    return gAirport.outputs[beltId] == nodeId;
 }
 
-BeltNode* FindNextNode(BeltNode* node)
+int FindNextNode(int beltId, int nodeId)
 {
-    if ( node->next[0] == NULL)
-    { 
-        return node->next[1]? node->next[1] : NULL; 
-    }
-
-    if ( node->next[1] == NULL)
-    {
-        return node->next[0]? node->next[0] : NULL; 
-    }
-
-    return node->next[GetRandomNumber(0,2)];
+    int newNodeId = nodeId + 1; 
+    return newNodeId < gAirport.beltSize[beltId] ? newNodeId : -1;
 }
 
 void MoveSuitcase(int index, int elapsed)
@@ -154,8 +149,9 @@ void MoveSuitcase(int index, int elapsed)
         return;
     }
 
-    BeltNode* prevNode = gAirport.gSuitcaseStates[index].prevNode; 
-    BeltNode* nextNode = gAirport.gSuitcaseStates[index].nextNode; 
+    int belt     = gAirport.gSuitcaseStates[index].beltId; 
+    int prevNode = gAirport.gSuitcaseStates[index].prevNode; 
+    int nextNode = gAirport.gSuitcaseStates[index].nextNode; 
 
     gAirport.gSuitcaseStates[index].timer -= elapsed; 
     if (gAirport.gSuitcaseStates[index].timer <= 0)
@@ -164,9 +160,9 @@ void MoveSuitcase(int index, int elapsed)
         const int extraElapsed = -gAirport.gSuitcaseStates[index].timer;
         gAirport.gSuitcaseStates[index].prevNode = nextNode; //Advance node 
 
-        GetSuitcase(index)->position = *(nextNode->position);
+        GetSuitcase(index)->position = GetNodes(belt)[nextNode];
 
-        if ( IsScannerNode(nextNode) && prevNode != nextNode )
+        if ( IsScannerNode(belt,nextNode) && prevNode != nextNode )
         { 
             //We jsut arrived to a scanner
 
@@ -176,7 +172,7 @@ void MoveSuitcase(int index, int elapsed)
             gAirport.gSuitcaseStates[index].totalTimer = gScannerWaitTime;
             MoveSuitcase(index, extraElapsed);
         }
-        else if ( IsOutputNode(nextNode) && prevNode != nextNode )
+        else if ( IsOutputNode(belt,nextNode) && prevNode != nextNode )
         {
             //We just arrives to a scanner 
 
@@ -186,8 +182,8 @@ void MoveSuitcase(int index, int elapsed)
         }
         else 
         { 
-            BeltNode* newNextNode = FindNextNode(nextNode); 
-            BeltNode* newPrevNode = nextNode; 
+            int newNextNode = FindNextNode(belt, nextNode); 
+            int newPrevNode = nextNode; 
             gAirport.gSuitcaseStates[index].nextNode = newNextNode; 
 
             if ( newNextNode == NULL)
@@ -197,10 +193,13 @@ void MoveSuitcase(int index, int elapsed)
             }
             else 
             { 
+                VECTOR prevPos = GetNodes(belt)[newPrevNode];
+                VECTOR nextPos = GetNodes(belt)[newNextNode];
+
                 //Regular advance
-                long dx = newNextNode->position->vx - newPrevNode->position->vx; 
-                long dy = newNextNode->position->vy - newPrevNode->position->vy; 
-                long dz = newNextNode->position->vz - newPrevNode->position->vz; 
+                long dx = nextPos.vx - prevPos.vx; 
+                long dy = nextPos.vy - prevPos.vy; 
+                long dz = nextPos.vz - prevPos.vz; 
                 long distance = csqrt(dx*dx + dy*dy + dz*dz);
                 int timeToNext = distance / gSuitcaseSpeed; 
 
@@ -215,14 +214,17 @@ void MoveSuitcase(int index, int elapsed)
     { 
         //interpolate between first position and the last 
 
-        const int totalTime = gAirport.gSuitcaseStates[index].totalTimer;
-        const int remainingtime =  gAirport.gSuitcaseStates[index].timer;
-        const int factor = (256*(totalTime - remainingtime)) / totalTime; 
+        //const int totalTime = gAirport.gSuitcaseStates[index].totalTimer;
+        //const int remainingtime =  gAirport.gSuitcaseStates[index].timer;
+        //const int factor = (256*(totalTime - remainingtime)) / totalTime; 
 
-        Suitcase* suitcase = GetSuitcase(index);
-        suitcase->position.vx = lerpS(prevNode->position->vx,nextNode->position->vx,factor);
-        suitcase->position.vy = lerpS(prevNode->position->vy,nextNode->position->vy,factor);
-        suitcase->position.vz = lerpS(prevNode->position->vz,nextNode->position->vz,factor);
+        //VECTOR prevPos = GetNodes(belt)[prevNode];
+        //VECTOR nextPos = GetNodes(belt)[nextNode];
+
+        //Suitcase* suitcase = GetSuitcase(index);
+        //suitcase->position.vx = lerpS(prevPos.vx,nextPos.vx,factor);
+        //suitcase->position.vy = lerpS(prevPos.vy,nextPos.vy,factor);
+        //suitcase->position.vz = lerpS(prevPos.vz,nextPos.vz,factor);
 
         //TODO ~ ramonv ~ orient yaw ( optional )
     } 

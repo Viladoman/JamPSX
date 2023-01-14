@@ -4,9 +4,6 @@
 
 #include "dcMisc.h"
 
-#define MAX_SHAPES    2
-#define MAX_PATTERNS  2
-
 /* placeholder */
 
 #define CUBESIZE 196 
