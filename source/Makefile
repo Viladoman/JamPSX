@@ -2,7 +2,7 @@ TARGET = MAIN
 TYPE = ps-exe
 
 SRCS = main.c suitcase.c airport.c image.c \
-		gamestate.c main_menu.c gameover.c \
+		gamestate.c main_menu.c gameover.c intro.c \
 		data/BombaRoja.tim \
 		data/CamisetaRoja.tim \
 		data/DrogasRoja.tim \
@@ -28,6 +28,7 @@ SRCS = main.c suitcase.c airport.c image.c \
 		data/Path_Texture2.tim \
 		data/DESCONTROL.tim \
 		data/GameOver.tim \
+		data/GameDev.tim \
 		data/Game_Ground_P1.tim \
 		data/Game_Ground_P2.tim \
 		data/Scanners_Texture.tim \

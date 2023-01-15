@@ -8,6 +8,7 @@ enum EGameStates {
     AIRPORT_GAMESTATE = 0,
     MAINMENU_GAMESTATE = 1, 
     GAMEOVER_GAMESTATE = 2,
+    INTRO_GAMESTATE = 3,
 };
 
 typedef struct {

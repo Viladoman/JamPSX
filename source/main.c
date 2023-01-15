@@ -75,8 +75,7 @@ int main(void)
     SVECTOR lightColor1 = {lightPow2, lightPow2, lightPow2};
     dcRender_SetLight(&render, 1, &lightDir1, &lightColor1);
 
-    GameState_ChangeGameState(MAINMENU_GAMESTATE);
-    // GameState_ChangeGameState(AIRPORT_GAMESTATE);
+    GameState_ChangeGameState(INTRO_GAMESTATE);
 
     // Font
     dcFont_UseSystemFont();

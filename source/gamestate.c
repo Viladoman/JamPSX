@@ -8,13 +8,15 @@
 #include "airport.h"
 #include "main_menu.h"
 #include "gameover.h"
+#include "intro.h"
 
 SGameState *CurrentGameState = NULL;
 extern SDC_Audio gAudio;
 
 SGameState GameStates[] = { {StartAirport, UpdateAirport, RenderAirport},
                             {InitMainMenu, UpdateMainMenu, RenderMainMenu}, 
-                            {InitGameOver, UpdateGameOver, RenderGameOver} };
+                            {InitGameOver, UpdateGameOver, RenderGameOver}, 
+                            {InitIntro,    UpdateIntro,    RenderIntro} };
 
 void GameState_ChangeGameStateEx(SGameState *NewGameState) {
     CurrentGameState = NewGameState;
@@ -37,6 +39,8 @@ void GameState_ChangeGameState(enum EGameStates state)
     case GAMEOVER_GAMESTATE:
         dcAudio_MusicPlay(&gAudio, 0);
         break;        
+    case INTRO_GAMESTATE:
+        break;
     }
     GameState_ChangeGameStateEx(&GameStates[state]);
 }
