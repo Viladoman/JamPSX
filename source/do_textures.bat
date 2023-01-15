@@ -2,7 +2,11 @@
 ..\tools\BMP2TIM\BMP2TIM.exe textures\Scanners_Texture.bmp data\Scanners_Texture.tim 4 -clut=16,480 -org=704,0
 
 ..\tools\BMP2TIM\BMP2TIM.exe textures\HeartEmpty.bmp data\HeartEmpty.tim 4 -clut=144,481 -org=640,64 -mpink
-..\tools\BMP2TIM\BMP2TIM.exe textures\HeartFull.bmp data\HeartFull.tim 4 -clut=160,481 -org=640,128 -mpink
+..\tools\BMP2TIM\BMP2TIM.exe textures\HeartFull.bmp data\HeartFull.tim 4 -clut=160,481 -org=640,80 -mpink
+
+..\tools\BMP2TIM\BMP2TIM.exe textures\ButtonTriangle.bmp data\ButtonTriangle.tim 4 -clut=176,481 -org=640,96 -mpink
+..\tools\BMP2TIM\BMP2TIM.exe textures\ButtonSquare.bmp data\ButtonSquare.tim 4 -clut=192,481 -org=640,112 -mpink
+..\tools\BMP2TIM\BMP2TIM.exe textures\ButtonCircle.bmp data\ButtonCircle.tim 4 -clut=208,481 -org=640,128 -mpink
 
 ..\tools\BMP2TIM\BMP2TIM.exe textures\CamisetaRoja.bmp data\CamisetaRoja.tim 4 -clut=16,481 -org=768,0
 ..\tools\BMP2TIM\BMP2TIM.exe textures\CamisetaAzul.bmp data\CamisetaAzul.tim 4 -clut=32,481 -org=832,0

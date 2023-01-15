@@ -59,10 +59,10 @@ void RenderMainMenu(SDC_Render* render, SDC_Camera* camera)
     DVECTOR uv;
     uv.vx = 0;
     uv.vy = 0;
-    dcRender_DrawSpriteRect(render, &gMainMenuLogo, 200, 50, 256, 128, &uv, &color);
+    dcRender_DrawSpriteRect(render, &gMainMenuLogo, 192, 50, 256, 128, &uv, &color);
 
     if ( gMenuShowPrompt )
     { 
-        dcFont_Print(render, 256, 190, &color, "PRESS START TO PLAY\n");
+        dcFont_Print(render, 250, 190, &color, "PRESS START TO PLAY\n");
     }
 }

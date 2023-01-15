@@ -21,6 +21,9 @@ SRCS = main.c suitcase.c airport.c image.c \
 		data/MermaidAzul.tim \
 		data/HeartEmpty.tim \
 		data/HeartFull.tim \
+		data/ButtonTriangle.tim \
+		data/ButtonSquare.tim \
+		data/ButtonCircle.tim \
 		data/Path_Texture.tim \
 		data/DESCONTROL.tim \
 		data/GameOver.tim \
