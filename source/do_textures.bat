@@ -5,6 +5,9 @@
 ..\tools\BMP2TIM\BMP2TIM.exe textures\Game_Ground_P2.bmp data\Game_Ground_P2.tim 4 -clut=112,480 -org=704,128
 rem ..\tools\BMP2TIM\BMP2TIM.exe textures\Scanners_Texture.bmp data\Scanners_Texture.tim 4 -clut=128,480 -org=704,192
 
+..\tools\BMP2TIM\BMP2TIM.exe textures\HeartEmpty.bmp data\HeartEmpty.tim 4 -clut=144,481 -org=640,64 -mpink
+..\tools\BMP2TIM\BMP2TIM.exe textures\HeartFull.bmp data\HeartFull.tim 4 -clut=160,481 -org=640,128 -mpink
+
 ..\tools\BMP2TIM\BMP2TIM.exe textures\CamisetaRoja.bmp data\CamisetaRoja.tim 4 -clut=16,481 -org=768,0
 ..\tools\BMP2TIM\BMP2TIM.exe textures\CamisetaAzul.bmp data\CamisetaAzul.tim 4 -clut=32,481 -org=832,0
 ..\tools\BMP2TIM\BMP2TIM.exe textures\BombaRoja.bmp data\BombaRoja.tim 4 -clut=48,481 -org=768,64

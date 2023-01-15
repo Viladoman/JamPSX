@@ -19,6 +19,8 @@ SRCS = main.c suitcase.c airport.c image.c \
 		data/PistolaAzul.tim \
 		data/JeringaAzul.tim \
 		data/MermaidAzul.tim \
+		data/HeartEmpty.tim \
+		data/HeartFull.tim \
 		data/Path_Texture.tim \
 		data/DESCONTROL.tim \
 		data/GameOver.tim \
