@@ -31,7 +31,7 @@ static int gSpawnTimerRange = 50;
 static int gScannerWaitTime = 50;
 static int gSuitcaseSpeed   = 8; 
 static int gStartLives      = 5; 
-static int gDifficultyScoreUpgrade = 10; 
+static int gDifficultyScoreUpgrade = 5; 
 static int gDiffiultyLevel  = 0; 
 
 static bool gCheatInvicible = false; 
@@ -634,16 +634,18 @@ void RenderUI(SDC_Render* render)
     uv.vx = 0;
     uv.vy = 0;
 
+    int legendY = 85; 
+    int legendYStride = 20;
+    int legendTextOffsetY = 5; 
+
     CVECTOR color = {127, 127, 127};
     CVECTOR colorBlack = {0, 0, 0};
     char txt[256];
     sprintf(txt, "%d %s\n", gAirport.score, gCheatInvicible? "[GOD]": "");
-    dcFont_Print(render, 400, 215, &colorBlack, txt);
+    dcFont_Print(render, 520, 85 + legendTextOffsetY, &colorBlack, "SCORE:");
+    dcFont_Print(render, 520, 95 + legendTextOffsetY, &colorBlack, txt);
 
     //Legend 
-    int legendY = 85; 
-    int legendYStride = 20; 
-    int legendTextOffsetY = 5; 
     dcRender_DrawSpriteRect(render, &gButtonTriangle, 20, legendY, 32, 16, &uv, &color);
     dcFont_Print(render, 60, legendY + legendTextOffsetY, &colorBlack, "WEAPONS");
 
@@ -657,7 +659,7 @@ void RenderUI(SDC_Render* render)
 
     //Hearts
     int startX = 210; 
-    for ( int i=0;i<gStartLives;++i)
+    for ( int i=0;i<gAirport.lives;++i)
     { 
         dcRender_DrawSpriteRect(render, i >= gAirport.lives? &gHeartEmpty : &gHeartFull, startX, 210, 32, 16, &uv, &color);
         startX += 32+5;
