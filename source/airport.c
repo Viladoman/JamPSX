@@ -4,6 +4,7 @@
 
 #include "dcInput.h"
 #include "dcFont.h"
+#include "dcAudio.h"
 
 #include "suitcase.h"
 #include "gamestate.h"
@@ -67,6 +68,14 @@ extern unsigned long _binary_data_PistolaAzul_tim_start[];
 extern unsigned long _binary_data_JeringaAzul_tim_start[];
 extern unsigned long _binary_data_MermaidAzul_tim_start[];
 
+extern unsigned long _binary_data_Path_Texture_tim_start[];
+
+// Audios
+extern unsigned long _binary_data_HeartLoose_vag_start[];
+extern unsigned long _binary_data_ItemOK_vag_start[];
+
+extern SDC_Audio gAudio;
+
 SDC_TIM_IMAGE gContentScans[2][MAX_ITEM_CATEGORIES][ITEM_VARIANTS];
 
 typedef struct 
@@ -89,6 +98,8 @@ typedef struct
     SDC_TIM_IMAGE groundP1;
     SDC_TIM_IMAGE groundP2;
     SDC_TIM_IMAGE scannersTex;
+    SDC_Sfx       heartLoose;
+    SDC_Sfx       itemOK;
 
     SuitcaseState gSuitcaseStates[MAX_SUITCASES];
 
@@ -227,6 +238,10 @@ void StartAirport()
     dcRender_LoadTexture( &gContentScans[1][2][1], _binary_data_JeringaAzul_tim_start);          
     dcRender_LoadTexture( &gContentScans[1][3][0], _binary_data_AbuelaAzul_tim_start); 
     dcRender_LoadTexture( &gContentScans[1][3][1], _binary_data_MermaidAzul_tim_start);  
+
+    //load audios
+    dcAudio_SfxLoad(&gAudio, &gAirport.heartLoose, (u_char *)_binary_data_HeartLoose_vag_start);
+    dcAudio_SfxLoad(&gAudio, &gAirport.itemOK, (u_char *)_binary_data_ItemOK_vag_start);
 }
 
 void TrySpawnSuitcaseAtBelt(unsigned char beltId)
@@ -296,10 +311,12 @@ void ValidateSuitcase(int index)
     if ( contentMask == validator ) 
     { 
         ++gAirport.score;
+        dcAudio_SfxPlay(&gAirport.itemOK);
     }
     else if ( !gCheatInvicible )
     { 
         --gAirport.lives;
+        dcAudio_SfxPlay(&gAirport.heartLoose);
         if ( gAirport.lives <= 0 )
         { 
             GameState_ChangeGameState(GAMEOVER_GAMESTATE);

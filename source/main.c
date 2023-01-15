@@ -30,6 +30,8 @@
  #define FRAME_Y 240 /* Make frame 240 pixels. */
 #endif
 
+SDC_Audio gAudio;
+
 int main(void) 
 {
     dcMemory_Init();
@@ -50,6 +52,9 @@ int main(void)
     dcCamera_SetCameraPosition(&camera, 0, cameraHeight, distance);
     dcCamera_LookAt(&camera, &VECTOR_ZERO);
 
+    // Audio
+    dcAudio_Init(&gAudio, 16);
+
     short ambientPow = 25;
     CVECTOR ambientColor = {ambientPow, ambientPow, ambientPow};
     dcRender_SetAmbientColor(&render, &ambientColor );
@@ -66,25 +71,19 @@ int main(void)
     SVECTOR lightColor1 = {lightPow2, lightPow2, lightPow2};
     dcRender_SetLight(&render, 1, &lightDir1, &lightColor1);
 
-    // GameState_ChangeGameState(MAINMENU_GAMESTATE);
-    GameState_ChangeGameState(AIRPORT_GAMESTATE);
+    GameState_ChangeGameState(MAINMENU_GAMESTATE);
+    // GameState_ChangeGameState(AIRPORT_GAMESTATE);
 
     // Font
     dcFont_UseSystemFont();
-
-    // Audio
-    SDC_Audio audio;
-    dcAudio_Init(&audio, 16);
-    dcAudio_MusicPlay(&audio, 0);
-    // dcAudio_SfxLoad(&audio, &bellSfx, (u_char *)_binary_data_bell_vag_start);
 
     while (1) 
     {
         GameState_Update(1);
         GameState_Render(&render, &camera);
 
-        dcAudio_Update(&audio);
-        dcRender_ReportPrimitivesSize(&render);
+        dcAudio_Update(&gAudio);
+        // dcRender_ReportPrimitivesSize(&render);
         dcRender_SwapBuffers(&render);
     }
 

@@ -4,11 +4,13 @@
 #include <libgpu.h>
 #include <libgs.h>
 
+#include "dcAudio.h"
 #include "airport.h"
 #include "main_menu.h"
 #include "gameover.h"
 
 SGameState *CurrentGameState = NULL;
+extern SDC_Audio gAudio;
 
 SGameState GameStates[] = { {StartAirport, UpdateAirport, RenderAirport},
                             {InitMainMenu, UpdateMainMenu, RenderMainMenu}, 
@@ -24,6 +26,18 @@ void GameState_ChangeGameStateEx(SGameState *NewGameState) {
 
 void GameState_ChangeGameState(enum EGameStates state)
 {
+    switch (state)
+    {
+    case AIRPORT_GAMESTATE:
+        dcAudio_MusicPlay(&gAudio, 1);
+        break;
+    case MAINMENU_GAMESTATE:
+        dcAudio_MusicPlay(&gAudio, 0);
+        break;
+    case GAMEOVER_GAMESTATE:
+        dcAudio_MusicPlay(&gAudio, 0);
+        break;        
+    }
     GameState_ChangeGameStateEx(&GameStates[state]);
 }
 

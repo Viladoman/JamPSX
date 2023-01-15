@@ -25,6 +25,9 @@ SRCS = main.c suitcase.c airport.c image.c \
 		data/Game_Ground_P1.tim \
 		data/Game_Ground_P2.tim \
 		data/Scanners_Texture.tim \
+		data/HeartLoose.vag \
+		data/ItemOK.vag \
+		data/PressStart.vag \
 		../third_party/common/syscalls/printf.s \
 		../third_party/common/crt0/crt0.s \
 		dcLibPsx/src/dcMemory.c\

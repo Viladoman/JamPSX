@@ -2,6 +2,7 @@
 
 #include "dcInput.h"
 #include "dcFont.h"
+#include "dcAudio.h"
 #include "gamestate.h"
 
 SDC_Input inputMenu[2];
@@ -10,8 +11,12 @@ int gMenuFlipTextTimer = 0;
 bool gMenuShowPrompt = false;
 
 SDC_TIM_IMAGE gMainMenuLogo;
+SDC_Sfx       gPressStartSfx;
+
+extern SDC_Audio gAudio;
 
 extern unsigned long _binary_data_DESCONTROL_tim_start[];
+extern unsigned long _binary_data_PressStart_vag_start[];
 
 void InitMainMenu() 
 {
@@ -19,6 +24,7 @@ void InitMainMenu()
     dcInput_InitializePad(&inputMenu[1], 1);
 
     dcRender_LoadTexture(&gMainMenuLogo, _binary_data_DESCONTROL_tim_start);
+    dcAudio_SfxLoad(&gAudio, &gPressStartSfx, (u_char *)_binary_data_PressStart_vag_start);
 }
 
 bool menuBecomedPressed(int key)
@@ -41,6 +47,7 @@ void UpdateMainMenu(int elapsed)
 
     if ( menuBecomedPressed(PADstart) )
     {
+        dcAudio_SfxPlay(&gPressStartSfx);
         GameState_ChangeGameState(AIRPORT_GAMESTATE);
     }
 }
