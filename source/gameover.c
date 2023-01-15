@@ -9,9 +9,13 @@
 
 SDC_Input input[2]; 
 
+SDC_TIM_IMAGE gGameOverLogo;
+extern unsigned long _binary_data_GameOver_tim_start[];
+
 void InitGameOver() {
     dcInput_InitializePad(&input[0], 0);
     dcInput_InitializePad(&input[1], 1);
+    dcRender_LoadTexture(&gGameOverLogo, _binary_data_GameOver_tim_start);
 }
 
 void UpdateGameOver(int elapsed) {
@@ -28,11 +32,17 @@ void RenderGameOver(SDC_Render* render, SDC_Camera* camera)
 {
     int score = GetAirportScore();
 
-    //Render UI / Score
     CVECTOR color = {127, 127, 127};
-    char txt[256];
 
-    dcFont_Print(render,256,50,&color,"GAME OVER"); 
-    sprintf(txt, "FINAL SCORE: %d \n", score);
-    dcFont_Print(render, 256, 120, &color, txt);
+    DVECTOR uv;
+    uv.vx = 0;
+    uv.vy = 0;
+    dcRender_DrawSpriteRect(render, &gGameOverLogo, 200, 50, 256, 128, &uv, &color);
+
+    //Render UI / Score
+    dcFont_Print(render, 300, 115, &color, "SCORE:");
+
+    char txt[256];
+    sprintf(txt, "%d\n", score);
+    dcFont_Print(render, 300, 130, &color, txt);
 }

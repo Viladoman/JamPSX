@@ -10,6 +10,7 @@
 #define MAX_SHAPES    6
 #define MAX_PATTERNS  5
 #define MAX_ITEM_CATEGORIES 4
+#define ITEM_VARIANTS 2
 
 typedef struct 
 {
@@ -19,6 +20,7 @@ typedef struct
     short          pitch; 
     VECTOR         position;  
     unsigned char  content;
+    unsigned char  contentVariation; 
 } Suitcase; 
 
 void ResetSuitcases();
@@ -28,7 +30,7 @@ int  GetSuitcaseIndex(Suitcase* suitcase);
 Suitcase* GetSuitcase(int index);
 bool IsSuitcaseActive(int index);
 void DestroySuitcase(Suitcase* input);
-void SetupSuitcase(Suitcase* suitcase, unsigned int shape, unsigned int pattern, unsigned char content);
+void SetupSuitcase(Suitcase* suitcase, unsigned int shape, unsigned int pattern, unsigned char content, unsigned char contentVariation);
 void RenderSuitcase(SDC_Render* render, SDC_Camera* camera, Suitcase* suitcase);
 void RenderSuitcases(SDC_Render* render, SDC_Camera* camera);
 

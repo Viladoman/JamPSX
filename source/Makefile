@@ -3,15 +3,25 @@ TYPE = ps-exe
 
 SRCS = main.c suitcase.c airport.c image.c \
 		gamestate.c main_menu.c gameover.c \
-		data/BombaAzul.tim \
 		data/BombaRoja.tim \
-		data/MarihuanaAzul.tim \
-		data/MarihuanaRojo.tim \
-		data/OsitoAzul.tim \
-		data/OsitoRojo.tim \
-		data/ZapatoAzul.tim \
-		data/ZapatoRojo.tim \
+		data/CamisetaRoja.tim \
+		data/DrogasRoja.tim \
+		data/AbuelaRoja.tim \
+		data/BombaAzul.tim \
+		data/CamisetaAzul.tim \
+		data/DrogasAzul.tim \
+		data/AbuelaAzul.tim \
+		data/SocksRoja.tim \
+		data/PistolaRoja.tim \
+		data/JeringaRoja.tim \
+		data/MermaidRoja.tim \
+		data/SocksAzul.tim \
+		data/PistolaAzul.tim \
+		data/JeringaAzul.tim \
+		data/MermaidAzul.tim \
 		data/Path_Texture.tim \
+		data/DESCONTROL.tim \
+		data/GameOver.tim \
 		data/Game_Ground_P1.tim \
 		data/Game_Ground_P2.tim \
 		data/Scanners_Texture.tim \

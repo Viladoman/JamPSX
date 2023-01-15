@@ -30,7 +30,7 @@ void dcRender_ReportPrimitivesSize(SDC_Render* render) {
     u_char* base_ptr = render->primitives[render->doubleBufferIndex];
     size_t nbytes = sizeof(u_char) * render->bytesPrimitives;
     size_t curr_offset = render->nextPrimitive - base_ptr; 
-    printf("Primitives bytes '%d/%d Triangles '%d' totalPrimitives %d\n", curr_offset, nbytes, totalPrimitives, totalTriangles);
+    //printf("Primitives bytes '%d/%d Triangles '%d' totalPrimitives %d\n", curr_offset, nbytes, totalPrimitives, totalTriangles);
     totalPrimitives = 0;
     totalTriangles = 0;
 }
