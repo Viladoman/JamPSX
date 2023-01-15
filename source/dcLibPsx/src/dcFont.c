@@ -19,6 +19,16 @@ typedef struct {
 SFont gFont;
 
 void dcFont_Load(unsigned long *texture) {
+    // gFont.firstChar = 32;
+    // gFont.charsPerLine = 16;
+    // gFont.charWidth = 8;
+    // gFont.charHeight = 8;
+    // gFont.lineWidth = gFont.charsPerLine*gFont.charWidth;
+    // dcRender_LoadTexture(&gFont.tim, texture);
+    dcFont_LoadEx(texture, 16, 8, 8);
+}
+
+void dcFont_LoadEx(unsigned long *texture, int charPerLine, int charWidth, int charHeight) {
     gFont.firstChar = 32;
     gFont.charsPerLine = 16;
     gFont.charWidth = 8;
