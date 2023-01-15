@@ -24,9 +24,9 @@
 
 #include "meshes/Divider.h"
 
-static int gSpawnTimerBase  = 100; //5 * 250; 
-static int gSpawnTimerRange = 50; //3 * 250; 
-static int gScannerWaitTime = 50; //3 * 250; 
+static int gSpawnTimerBase  = 100;
+static int gSpawnTimerRange = 50;
+static int gScannerWaitTime = 50;
 static int gSuitcaseSpeed   = 8; 
 static int gStartLives      = 5; 
 static int gDifficultyScoreUpgrade = 10; 
@@ -34,8 +34,8 @@ static int gDiffiultyLevel  = 0;
 
 static bool gCheatInvicible = false; 
 
-static int gRedColorIntensity = 127; 
-static int gBlueColorIntensity = 60; 
+static int gRedColorIntensity = 255; 
+static int gBlueColorIntensity = 150; 
 
 // Diff:
 // 0) single red belt | 2 options | Slow 
@@ -69,10 +69,16 @@ extern unsigned long _binary_data_MermaidAzul_tim_start[];
 
 extern unsigned long _binary_data_HeartEmpty_tim_start[];
 extern unsigned long _binary_data_HeartFull_tim_start[];
+extern unsigned long _binary_data_ButtonTriangle_tim_start[];
+extern unsigned long _binary_data_ButtonSquare_tim_start[];
+extern unsigned long _binary_data_ButtonCircle_tim_start[];
 
 SDC_TIM_IMAGE gContentScans[2][MAX_ITEM_CATEGORIES][ITEM_VARIANTS];
 SDC_TIM_IMAGE gHeartFull; 
 SDC_TIM_IMAGE gHeartEmpty; 
+SDC_TIM_IMAGE gButtonTriangle; 
+SDC_TIM_IMAGE gButtonSquare; 
+SDC_TIM_IMAGE gButtonCircle; 
 
 typedef struct 
 {
@@ -216,6 +222,10 @@ void StartAirport()
 
     dcRender_LoadTexture(&gHeartEmpty, _binary_data_HeartEmpty_tim_start);
     dcRender_LoadTexture(&gHeartFull, _binary_data_HeartFull_tim_start);
+
+    dcRender_LoadTexture(&gButtonTriangle, _binary_data_ButtonTriangle_tim_start);
+    dcRender_LoadTexture(&gButtonSquare, _binary_data_ButtonSquare_tim_start);
+    dcRender_LoadTexture(&gButtonCircle, _binary_data_ButtonCircle_tim_start);
 
     //Icons
     dcRender_LoadTexture( &gContentScans[0][0][0], _binary_data_CamisetaRoja_tim_start); 
@@ -463,6 +473,11 @@ void UpdateCheats(int padId)
             if ( gBlueColorIntensity < 0 ) gBlueColorIntensity = 0;
             printf("Blue Intensity to %d\n", gBlueColorIntensity);
         }
+
+        if ( dcInput_IsPressed(&gAirport.input[padId],PADRdown))
+        { 
+            FntPrint("COLOR BOOSTER, RED: %d BLUE: %d\n", gRedColorIntensity, gBlueColorIntensity);
+        }
     }
 }
 
@@ -613,6 +628,21 @@ void RenderUI(SDC_Render* render)
     char txt[256];
     sprintf(txt, "%d %s\n", gAirport.score, gCheatInvicible? "[GOD]": "");
     dcFont_Print(render, 400, 215, &colorBlack, txt);
+
+    //Legend 
+    int legendY = 85; 
+    int legendYStride = 20; 
+    int legendTextOffsetY = 5; 
+    dcRender_DrawSpriteRect(render, &gButtonTriangle, 20, legendY, 32, 16, &uv, &color);
+    dcFont_Print(render, 60, legendY + legendTextOffsetY, &colorBlack, "WEAPONS");
+
+    legendY += legendYStride;
+    dcRender_DrawSpriteRect(render, &gButtonSquare, 20, legendY, 32, 16, &uv, &color);
+    dcFont_Print(render, 60, legendY + legendTextOffsetY, &colorBlack, "DRUGS");
+
+    legendY += legendYStride;
+    dcRender_DrawSpriteRect(render, &gButtonCircle, 20, legendY, 32, 16, &uv, &color);
+    dcFont_Print(render, 60, legendY + legendTextOffsetY, &colorBlack, "IMMIGRATION");
 
     //Hearts
     int startX = 210; 
