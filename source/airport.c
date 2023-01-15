@@ -46,6 +46,7 @@ static int gBlueColorIntensity = 150;
 // 5) double belt | 4 options | fast  
 
 extern unsigned long _binary_data_Path_Texture_tim_start[];
+extern unsigned long _binary_data_Path_Texture2_tim_start[];
 extern unsigned long _binary_data_Game_Ground_P1_tim_start[];
 extern unsigned long _binary_data_Game_Ground_P2_tim_start[];
 extern unsigned long _binary_data_Scanners_Texture_tim_start[];
@@ -215,6 +216,7 @@ void StartAirport()
         gAirport.nextSpawn[i] = GetRandomNumber(spawnerTime,range);
     }
     // load textures
+    dcRender_LoadTexture(&gAirport.pathTexture, _binary_data_Path_Texture2_tim_start);
     dcRender_LoadTexture(&gAirport.pathTexture, _binary_data_Path_Texture_tim_start);
     dcRender_LoadTexture(&gAirport.groundP1, _binary_data_Game_Ground_P1_tim_start);
     dcRender_LoadTexture(&gAirport.groundP2, _binary_data_Game_Ground_P2_tim_start);
