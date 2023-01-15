@@ -1,2 +1,8 @@
 env
 *.orig
+source/cdrom/LICENSEE.DAT
+source/cdrom/MAIN.EXE
+source/cdrom/myimage.bin
+source/cdrom/myimage.cue
+*.tim
+*.tim

@@ -8,6 +8,12 @@
 int totalPrimitives = 0;
 int totalTriangles = 0;
 
+#define FIX_TEXCOORD_U(u, rectX) (u+(rectX%64)) 
+#define FIX_TEXCOORD_V(v, rectY) (v+(rectY%256))
+
+#define SET_UV3_FIX(poly, u0,v0,u1,v1,u2,v2,rectX,rectY) setUV3(poly, FIX_TEXCOORD_U(u0, rectX), FIX_TEXCOORD_V(v0, rectY), FIX_TEXCOORD_U(u1, rectX), FIX_TEXCOORD_V(v1, rectY), FIX_TEXCOORD_U(u2, rectX), FIX_TEXCOORD_V(v2, rectY));
+#define SET_UV0_FIX(sprite, u0,v0,rectX,rectY) setUV0(sprite, FIX_TEXCOORD_U(u0, rectX), FIX_TEXCOORD_V(v0, rectY));
+
 void _dcRender_IncPrimitive(SDC_Render* render, size_t offset)
 {
     u_char* base_ptr = render->primitives[render->doubleBufferIndex];
@@ -66,12 +72,12 @@ void dcRender_Init(SDC_Render* render, int width, int height, CVECTOR bgColor, i
     setRGB0( &render->drawEnvironment[0], bgColor.r, bgColor.g, bgColor.b );
     render->drawEnvironment[0].isbg = 1;
     render->drawEnvironment[0].dtd = 1;
-    render->displayEnvironment[0].isinter = 1;
+    render->displayEnvironment[0].isinter = 0;
 
     setRGB0( &render->drawEnvironment[1], bgColor.r, bgColor.g, bgColor.b );
     render->drawEnvironment[1].isbg = 1;
     render->drawEnvironment[1].dtd = 1;
-    render->displayEnvironment[1].isinter = 1;
+    render->displayEnvironment[1].isinter = 0;
 
     SetDispMask(1);    
 	// Set GTE offset (recommended method  of centering)
@@ -140,33 +146,39 @@ int dcRender_SwapBuffers(SDC_Render* render) {
     return syncValue; 
 }
 
-void dcRender_LoadTexture(TIM_IMAGE* tim, u_long* texture) {
+void dcRender_LoadTexture(SDC_TIM_IMAGE* sdcTim, u_long* texture) {
+    TIM_IMAGE tim;
     OpenTIM(texture);                            // Open the tim binary data, feed it the address of the data in memory
-    ReadTIM(tim);                                // This read the header of the TIM data and sets the corresponding members of the TIM_IMAGE structure
+    ReadTIM(&tim);                                // This read the header of the TIM data and sets the corresponding members of the SDC_TIM_IMAGE structure
 
-    LoadImage( tim->prect, tim->paddr );        // Transfer the data from memory to VRAM at position prect.x, prect.y
-    if( tim->mode & 0x8 ) {                     // check 4th bit       // If 4th bit == 1, TIM has a CLUT
-        LoadImage( tim->crect, tim->caddr );    // Load it to VRAM at position crect.x, crect.y
+    LoadImage( tim.prect, tim.paddr );        // Transfer the data from memory to VRAM at position prect.x, prect.y
+    if( tim.mode & 0x8 ) {                     // check 4th bit       // If 4th bit == 1, TIM has a CLUT
+        LoadImage( tim.crect, tim.caddr );    // Load it to VRAM at position crect.x, crect.y
     }
+    sdcTim->mode = tim.mode;
+    sdcTim->caddr = tim.caddr;
+    sdcTim->paddr = tim.paddr;
+    sdcTim->prect = *tim.prect;
+    sdcTim->crect = *tim.crect;
     DrawSync(0);                                // Wait for drawing to end
 }
 
-void dcRender_DrawSpriteRect(SDC_Render* render, const TIM_IMAGE *tim, short x, short y, short w, short h, const DVECTOR *uv, const CVECTOR *color) {
+void dcRender_DrawSpriteRect(SDC_Render* render, const SDC_TIM_IMAGE *tim, short x, short y, short w, short h, const DVECTOR *uv, const CVECTOR *color) {
     SPRT *sprt = (SPRT*)render->nextPrimitive;
 
     setSprt(sprt);
     setXY0(sprt, x, y);
     setWH(sprt, w, h);
     setRGB0(sprt, color->r, color->g, color->b);
-    setUV0(sprt, uv->vx, uv->vy);
-    setClut(sprt, tim->crect->x, tim->crect->y);
+    SET_UV0_FIX(sprt, uv->vx, uv->vy, tim->prect.x, tim->prect.y);
+    setClut(sprt, tim->crect.x, tim->crect.y);
 
     addPrim(render->orderingTable[render->doubleBufferIndex], sprt);
 
     _dcRender_IncPrimitive(render, sizeof(SPRT));
 
     DR_TPAGE *tpri = (DR_TPAGE*)render->nextPrimitive;
-    u_short tpage = getTPage(tim->mode, 0, tim->prect->x, tim->prect->y);
+    u_short tpage = getTPage(tim->mode, 0, tim->prect.x, tim->prect.y);
     setDrawTPage(tpri, 0, 0, tpage);
     addPrim(render->orderingTable[render->doubleBufferIndex], tpri);
     _dcRender_IncPrimitive(render, sizeof(DR_TPAGE));
@@ -352,10 +364,12 @@ void dcRender_DrawMesh(SDC_Render* render,  SDC_Mesh3D* mesh, MATRIX* transform,
 
                 SetPolyFT3(polyFT3);
                 setRGB0(polyFT3, curr_color.r, curr_color.g, curr_color.b);
-                setUV3(polyFT3, vertexs[index0].u , vertexs[index0].v, vertexs[index1].u , vertexs[index1].v, vertexs[index2].u , vertexs[index2].v);
                 if(drawParams && drawParams->tim) {
-                    polyFT3->tpage = getTPage(drawParams->tim->mode, 0, drawParams->tim->prect->x, drawParams->tim->prect->y); /*texture page*/
-                    polyFT3->clut = GetClut (drawParams->tim->crect->x, drawParams->tim->crect->y); /*texture CLUT*/
+                    SET_UV3_FIX(polyFT3, vertexs[index0].u, vertexs[index0].v, vertexs[index1].u, vertexs[index1].v, vertexs[index2].u, vertexs[index2].v, drawParams->tim->prect.x, drawParams->tim->prect.y);
+                    polyFT3->tpage = getTPage(drawParams->tim->mode, 0, drawParams->tim->prect.x, drawParams->tim->prect.y); /*texture page*/
+                    polyFT3->clut = GetClut (drawParams->tim->crect.x, drawParams->tim->crect.y); /*texture CLUT*/
+                } else{
+                    setUV3(polyFT3, vertexs[index0].u , vertexs[index0].v, vertexs[index1].u , vertexs[index1].v, vertexs[index2].u , vertexs[index2].v);
                 }
 
                 nclip = RotAverageNclip3(&vertexs[index0].position, &vertexs[index1].position, &vertexs[index2].position,
@@ -378,7 +392,14 @@ void dcRender_DrawMesh(SDC_Render* render,  SDC_Mesh3D* mesh, MATRIX* transform,
                 setRGB1(polyGT3, curr_color.r, curr_color.g, curr_color.b);
                 setRGB2(polyGT3, curr_color.r, curr_color.g, curr_color.b);
 
-                setUV3(polyGT3, vertexs[index0].u , vertexs[index0].v, vertexs[index1].u , vertexs[index1].v, vertexs[index2].u , vertexs[index2].v);
+                if(drawParams && drawParams->tim) {
+                    SET_UV3_FIX(polyGT3, vertexs[index0].u, vertexs[index0].v, vertexs[index1].u, vertexs[index1].v, vertexs[index2].u, vertexs[index2].v, drawParams->tim->prect.x, drawParams->tim->prect.y);
+                    polyGT3->tpage = getTPage(drawParams->tim->mode, 0, drawParams->tim->prect.x, drawParams->tim->prect.y); /*texture page*/
+                    polyGT3->clut = GetClut (drawParams->tim->crect.x, drawParams->tim->crect.y); /*texture CLUT*/
+                }
+                else {
+                    setUV3(polyGT3, vertexs[index0].u , vertexs[index0].v, vertexs[index1].u , vertexs[index1].v, vertexs[index2].u , vertexs[index2].v);
+                }
 
                 nclip = RotAverageNclip3(&vertexs[index0].position, &vertexs[index1].position, &vertexs[index2].position,
                                         (long *)&polyGT3->x0, (long *)&polyGT3->x1, (long *)&polyGT3->x2, &p, &otz, &flg);
@@ -419,10 +440,13 @@ void dcRender_DrawMesh(SDC_Render* render,  SDC_Mesh3D* mesh, MATRIX* transform,
                     setRGB2(polyGT3, curr_color.r, curr_color.g, curr_color.b);
                 }
 
-                setUV3(polyGT3, vertexs[index0].u , vertexs[index0].v, vertexs[index1].u , vertexs[index1].v, vertexs[index2].u , vertexs[index2].v);
                 if(drawParams && drawParams->tim) {
-                    polyGT3->tpage = getTPage(drawParams->tim->mode, 0, drawParams->tim->prect->x, drawParams->tim->prect->y); /*texture page*/
-                    polyGT3->clut = GetClut (drawParams->tim->crect->x, drawParams->tim->crect->y); /*texture CLUT*/
+                    SET_UV3_FIX(polyGT3, vertexs[index0].u, vertexs[index0].v, vertexs[index1].u, vertexs[index1].v, vertexs[index2].u, vertexs[index2].v, drawParams->tim->prect.x, drawParams->tim->prect.y);
+                    polyGT3->tpage = getTPage(drawParams->tim->mode, 0, drawParams->tim->prect.x, drawParams->tim->prect.y); /*texture page*/
+                    polyGT3->clut = GetClut (drawParams->tim->crect.x, drawParams->tim->crect.y); /*texture CLUT*/
+                }
+                else {
+                    setUV3(polyGT3, vertexs[index0].u , vertexs[index0].v, vertexs[index1].u , vertexs[index1].v, vertexs[index2].u , vertexs[index2].v);
                 }
 
 				addPrim(&orderingTable[otz], polyGT3);

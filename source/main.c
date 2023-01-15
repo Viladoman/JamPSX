@@ -16,6 +16,7 @@
 #include "dcCollision.h"
 #include "dcInput.h"
 #include "dcFont.h"
+#include "dcAudio.h"
 
 #include "airport.h"
 #include "main_menu.h"
@@ -48,7 +49,7 @@ int main(void)
     dcCamera_SetCameraPosition(&camera, 0, cameraHeight, distance);
     dcCamera_LookAt(&camera, &VECTOR_ZERO);
 
-    CVECTOR ambientColor = {0, 0, 0};
+    CVECTOR ambientColor = {10, 10, 10};
     dcRender_SetAmbientColor(&render, &ambientColor );
 
     SVECTOR lightDir = {DC_ONE, 0, 0 };
@@ -65,11 +66,18 @@ int main(void)
     // Font
     dcFont_UseSystemFont();
 
+    // Audio
+    SDC_Audio audio;
+    dcAudio_Init(&audio, 16);
+    dcAudio_MusicPlay(&audio, 0);
+    // dcAudio_SfxLoad(&audio, &bellSfx, (u_char *)_binary_data_bell_vag_start);
+
     while (1) 
     {
         GameState_Update(1);
         GameState_Render(&render, &camera);
 
+        dcAudio_Update(&audio);
         dcRender_ReportPrimitivesSize(&render);
         dcRender_SwapBuffers(&render);
     }

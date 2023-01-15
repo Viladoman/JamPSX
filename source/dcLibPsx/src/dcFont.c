@@ -4,7 +4,7 @@
 #include <stdarg.h>
 
 typedef struct {
-    TIM_IMAGE tim;
+    SDC_TIM_IMAGE tim;
     u_short firstChar;
     u_short charsPerLine;
     u_short charWidth;
@@ -40,9 +40,9 @@ void dcFont_UseSystemFont() {
     gFont.prect = prect;
 
     gFont.tim.mode = 0; //4bits
-    gFont.tim.crect = &gFont.crect;
+    gFont.tim.crect = gFont.crect;
     gFont.tim.caddr = NULL;
-    gFont.tim.prect = &gFont.prect;
+    gFont.tim.prect = gFont.prect;
     gFont.tim.paddr = NULL;
 }
 
