@@ -29,6 +29,7 @@
 
 ..\tools\BMP2TIM\BMP2TIM.exe textures\DESCONTROL_PressStart.bmp data\DESCONTROL.tim 8 -clut=0,480 -org=640,0
 ..\tools\BMP2TIM\BMP2TIM.exe textures\GameOver.bmp data\GameOver.tim 8 -clut=0,480 -org=640,0 -mpink
+..\tools\BMP2TIM\BMP2TIM.exe textures\gamedev_logo.bmp data\gamedev_logo.tim 4 -clut=0,480 -org=640,0
 
 ..\tools\BMP2TIM\BMP2TIM.exe textures\Game_Ground_P1.bmp data\Game_Ground_P1.tim 8 -clut=0,483 -org=640,256
 ..\tools\BMP2TIM\BMP2TIM.exe textures\Game_Ground_P2.bmp data\Game_Ground_P2.tim 8 -clut=256,483 -org=768,256
