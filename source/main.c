@@ -17,6 +17,7 @@
 #include "dcInput.h"
 #include "dcFont.h"
 #include "dcAudio.h"
+#include "dcPerformance.h"
 
 #include "airport.h"
 #include "main_menu.h"
@@ -29,6 +30,8 @@
  #define FRAME_X 640 /* Assume 320 wide display. */
  #define FRAME_Y 240 /* Make frame 240 pixels. */
 #endif
+
+SDC_Audio gAudio;
 
 int main(void) 
 {
@@ -49,6 +52,12 @@ int main(void)
     dcCamera_SetScreenResolution(&camera, width, height);
     dcCamera_SetCameraPosition(&camera, 0, cameraHeight, distance);
     dcCamera_LookAt(&camera, &VECTOR_ZERO);
+
+    // Performance
+    dcPerformance_Init();
+
+    // Audio
+    dcAudio_Init(&gAudio, 16);
 
     short ambientPow = 25;
     CVECTOR ambientColor = {ambientPow, ambientPow, ambientPow};
@@ -72,19 +81,13 @@ int main(void)
     // Font
     dcFont_UseSystemFont();
 
-    // Audio
-    SDC_Audio audio;
-    dcAudio_Init(&audio, 16);
-    dcAudio_MusicPlay(&audio, 0);
-    // dcAudio_SfxLoad(&audio, &bellSfx, (u_char *)_binary_data_bell_vag_start);
-
     while (1) 
     {
         GameState_Update(1);
         GameState_Render(&render, &camera);
 
-        dcAudio_Update(&audio);
-        dcRender_ReportPrimitivesSize(&render);
+        dcAudio_Update(&gAudio);
+        // dcRender_ReportPrimitivesSize(&render);
         dcRender_SwapBuffers(&render);
     }
 

@@ -159,5 +159,6 @@
 
 	-->
 	<track type="audio" source="audio/track01.wav"/>
+	<track type="audio" source="audio/track02.wav"/>
 	
 </iso_project>

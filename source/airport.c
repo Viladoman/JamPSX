@@ -4,6 +4,7 @@
 
 #include "dcInput.h"
 #include "dcFont.h"
+#include "dcAudio.h"
 
 #include "suitcase.h"
 #include "gamestate.h"
@@ -74,6 +75,12 @@ extern unsigned long _binary_data_ButtonTriangle_tim_start[];
 extern unsigned long _binary_data_ButtonSquare_tim_start[];
 extern unsigned long _binary_data_ButtonCircle_tim_start[];
 
+// Audios
+extern unsigned long _binary_data_HeartLoose_vag_start[];
+extern unsigned long _binary_data_ItemOK_vag_start[];
+
+extern SDC_Audio gAudio;
+
 SDC_TIM_IMAGE gContentScans[2][MAX_ITEM_CATEGORIES][ITEM_VARIANTS];
 SDC_TIM_IMAGE gHeartFull; 
 SDC_TIM_IMAGE gHeartEmpty; 
@@ -101,6 +108,8 @@ typedef struct
     SDC_TIM_IMAGE groundP1;
     SDC_TIM_IMAGE groundP2;
     SDC_TIM_IMAGE scannersTex;
+    SDC_Sfx       heartLoose;
+    SDC_Sfx       itemOK;
 
     SuitcaseState gSuitcaseStates[MAX_SUITCASES];
 
@@ -247,6 +256,10 @@ void StartAirport()
     dcRender_LoadTexture( &gContentScans[1][2][1], _binary_data_JeringaAzul_tim_start);          
     dcRender_LoadTexture( &gContentScans[1][3][0], _binary_data_AbuelaAzul_tim_start); 
     dcRender_LoadTexture( &gContentScans[1][3][1], _binary_data_MermaidAzul_tim_start);  
+
+    //load audios
+    dcAudio_SfxLoad(&gAudio, &gAirport.heartLoose, (u_char *)_binary_data_HeartLoose_vag_start);
+    dcAudio_SfxLoad(&gAudio, &gAirport.itemOK, (u_char *)_binary_data_ItemOK_vag_start);
 }
 
 void TrySpawnSuitcaseAtBelt(unsigned char beltId)
@@ -316,10 +329,12 @@ void ValidateSuitcase(int index)
     if ( contentMask == validator ) 
     { 
         ++gAirport.score;
+        dcAudio_SfxPlay(&gAirport.itemOK);
     }
     else if ( !gCheatInvicible )
     { 
         --gAirport.lives;
+        dcAudio_SfxPlay(&gAirport.heartLoose);
         if ( gAirport.lives <= 0 )
         { 
             GameState_ChangeGameState(GAMEOVER_GAMESTATE);
@@ -544,28 +559,25 @@ void RenderBackground(SDC_Render* render, SDC_Camera* camera) {
     dcCamera_ApplyCameraTransform(camera, &transform, &MVP);
 
     drawParams.tim = &gAirport.scannersTex;
-    dcRender_DrawMesh(render, &Exit_P1_Mesh, &MVP, &drawParams );
-    dcRender_DrawMesh(render, &Exit_P2_Mesh, &MVP, &drawParams );
+    dcRender_DrawMeshFast(render, &Exit_P1_Mesh, &MVP, &drawParams );
+    dcRender_DrawMeshFast(render, &Exit_P2_Mesh, &MVP, &drawParams );
 
-    dcRender_DrawMesh(render, &Scanner_P1_Mesh, &MVP, &drawParams );
-    dcRender_DrawMesh(render, &Scanner_P2_Mesh, &MVP, &drawParams );
+    dcRender_DrawMeshFast(render, &Scanner_P1_Mesh, &MVP, &drawParams );
+    dcRender_DrawMeshFast(render, &Scanner_P2_Mesh, &MVP, &drawParams );
 
     drawParams.tim = &gAirport.groundP1;
-    dcRender_DrawMesh(render, &Game_Ground_P1_Mesh, &MVP, &drawParams );
+    dcRender_DrawMeshFast(render, &Game_Ground_P1_Mesh, &MVP, &drawParams );
     drawParams.tim = &gAirport.groundP2;
-    dcRender_DrawMesh(render, &Game_Ground_P2_Mesh, &MVP, &drawParams );
+    dcRender_DrawMeshFast(render, &Game_Ground_P2_Mesh, &MVP, &drawParams );
     drawParams.tim = NULL;
 
-    dcRender_DrawMesh(render, &Scanner_P1_Mesh, &MVP, &drawParams );
-    dcRender_DrawMesh(render, &Scanner_P2_Mesh, &MVP, &drawParams );
-
     drawParams.tim = &gAirport.pathTexture;
-    dcRender_DrawMesh(render, &Path_P1_Mesh, &MVP, &drawParams );
-    dcRender_DrawMesh(render, &Path_P2_Mesh, &MVP, &drawParams );    
+    dcRender_DrawMeshFast(render, &Path_P1_Mesh, &MVP, &drawParams );
+    dcRender_DrawMeshFast(render, &Path_P2_Mesh, &MVP, &drawParams );    
     drawParams.tim = NULL;
 
     drawParams.constantColor = blackColor;
-    dcRender_DrawMesh(render, &Divider_Mesh, &MVP, &drawParams );
+    dcRender_DrawMeshFast(render, &Divider_Mesh, &MVP, &drawParams );
 }
 
 void RenderScanners(SDC_Render* render, SDC_Camera* camera)
@@ -614,7 +626,7 @@ void RenderScanners(SDC_Render* render, SDC_Camera* camera)
             dcCamera_ApplyCameraTransform(camera, &transform, &MVP);
 
             drawParams.tim = tim;
-            dcRender_DrawMesh(render, mesh, &MVP, &drawParams );
+            dcRender_DrawMeshFast(render, mesh, &MVP, &drawParams );
         }
     }
 }
