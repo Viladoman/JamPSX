@@ -43,7 +43,8 @@ int main(void)
     int  width = FRAME_X;
     int  height = FRAME_Y;
 
-    CVECTOR bgColor = {60, 120, 120};
+    //CVECTOR bgColor = {60, 120, 120};
+    CVECTOR bgColor = {0, 0, 0};
     dcRender_Init(&render, width, height, bgColor, 4096, 8192*8, RENDER_MODE_NTCS);
     dcCamera_SetScreenResolution(&camera, width, height);
     dcCamera_SetCameraPosition(&camera, 0, cameraHeight, distance);
@@ -60,8 +61,8 @@ int main(void)
     SVECTOR lightColor1 = {DC_ONE/2, DC_ONE/2, DC_ONE/2};
     dcRender_SetLight(&render, 1, &lightDir1, &lightColor1);
 
-    //GameState_ChangeGameState(MAINMENU_GAMESTATE);
-    GameState_ChangeGameState(AIRPORT_GAMESTATE);
+    GameState_ChangeGameState(MAINMENU_GAMESTATE);
+    //GameState_ChangeGameState(AIRPORT_GAMESTATE);
 
     // Font
     dcFont_UseSystemFont();

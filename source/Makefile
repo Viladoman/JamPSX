@@ -7,6 +7,10 @@ SRCS = main.c suitcase.c airport.c image.c \
 		data/BombaRoja.tim \
 		data/MarihuanaAzul.tim \
 		data/MarihuanaRojo.tim \
+		data/OsitoAzul.tim \
+		data/OsitoRojo.tim \
+		data/ZapatoAzul.tim \
+		data/ZapatoRojo.tim \
 		data/Path_Texture.tim \
 		data/Game_Ground_P1.tim \
 		data/Game_Ground_P2.tim \

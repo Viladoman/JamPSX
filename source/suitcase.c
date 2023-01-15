@@ -99,7 +99,7 @@ void DestroySuitcase(Suitcase* input)
 
 void SetupSuitcase(Suitcase* suitcase, unsigned int shape, unsigned int pattern, unsigned char content)
 {
-    suitcase->content = content; 
+    suitcase->content = content % MAX_ITEM_CATEGORIES; 
     suitcase->mesh = gSuitcaseShapes[shape % MAX_SHAPES];
     suitcase->color = gSuitcasesColors[pattern % MAX_PATTERNS];
 }

@@ -24,11 +24,25 @@
 
 #include "meshes/Divider.h"
 
+#define ITEM_VARIANTS 3
+
 static int gSpawnTimerBase  = 100; //5 * 250; 
-static int gSpawnTimerRange = 1; //3 * 250; 
+static int gSpawnTimerRange = 50; //3 * 250; 
 static int gScannerWaitTime = 50; //3 * 250; 
-static int gSuitcaseSpeed   = 6; 
-static int gStartLives      = 50; 
+static int gSuitcaseSpeed   = 8; 
+static int gStartLives      = 5; 
+static int gDifficultyScoreUpgrade = 10; 
+static int gDiffiultyLevel  = 0; 
+
+static bool gCheatInvicible = false; 
+
+// Diff:
+// 0) single red belt | 2 options | Slow 
+// 1) double belt | 2 options | slow 
+// 2) double belt | 2 options | medium 
+// 3) double belt | 3 options | medium 
+// 4) double belt | 4 options | medium 
+// 5) double belt | 4 options | fast  
 
 extern unsigned long _binary_data_Path_Texture_tim_start[];
 extern unsigned long _binary_data_Game_Ground_P1_tim_start[];
@@ -43,8 +57,7 @@ extern unsigned long _binary_data_OsitoAzul_tim_start[];
 extern unsigned long _binary_data_OsitoRojo_tim_start[];
 extern unsigned long _binary_data_ZapatoAzul_tim_start[];
 extern unsigned long _binary_data_ZapatoRojo_tim_start[];
-
-SDC_TIM_IMAGE gImageOk, gImageBad;
+TIM_IMAGE gImageOk, gImageBad;
 
 typedef struct 
 {
@@ -169,12 +182,16 @@ void StartAirport()
     gAirport.lives = gStartLives; 
     gAirport.score = 0; 
     gAirport.paused = false;
+    gDiffiultyLevel = 0;
 
     CreateGraph(); 
 
     for (int i=0;i<2;++i)
     { 
-        gAirport.nextSpawn[i] = GetRandomNumber(gSpawnTimerBase,gSpawnTimerRange);
+        int spawnerTime = gDiffiultyLevel > 1? 80 : gSpawnTimerBase;
+        spawnerTime = gDiffiultyLevel > 4? 20 : spawnerTime;
+        int range = gDiffiultyLevel > 4? 10 : gSpawnTimerRange;
+        gAirport.nextSpawn[i] = GetRandomNumber(spawnerTime,range);
     }
     // load textures
     dcRender_LoadTexture(&gAirport.pathTexture, _binary_data_Path_Texture_tim_start);
@@ -182,17 +199,39 @@ void StartAirport()
     dcRender_LoadTexture(&gAirport.groundP2, _binary_data_Game_Ground_P2_tim_start);
     dcRender_LoadTexture(&gAirport.scannersTex, _binary_data_Scanners_Texture_tim_start);
 
-// extern unsigned long _binary_data_BombaAzul_tim_start[];
-// extern unsigned long _binary_data_BombaRoja_tim_start[];
-// extern unsigned long _binary_data_MarihuanaAzul_tim_start[];
-// extern unsigned long _binary_data_MarihuanaRojo_tim_start[];
-// extern unsigned long _binary_data_OsitoAzul_tim_start[];
-// extern unsigned long _binary_data_OsitoRojo_tim_start[];
-// extern unsigned long _binary_data_ZapatoAzul_tim_start[];
-// extern unsigned long _binary_data_ZapatoRojo_tim_start[];
+    //Red
+    dcRender_LoadTexture( &gContentScans[0][0][0], _binary_data_OsitoRojo_tim_start); 
+    dcRender_LoadTexture( &gContentScans[0][0][1], _binary_data_OsitoRojo_tim_start); 
+    dcRender_LoadTexture( &gContentScans[0][0][2], _binary_data_OsitoRojo_tim_start); 
 
-    dcRender_LoadTexture(&gImageOk, _binary_data_BombaAzul_tim_start);
-    dcRender_LoadTexture(&gImageBad, _binary_data_BombaRoja_tim_start);
+    dcRender_LoadTexture( &gContentScans[0][1][0], _binary_data_BombaRoja_tim_start); 
+    dcRender_LoadTexture( &gContentScans[0][1][1], _binary_data_BombaRoja_tim_start); 
+    dcRender_LoadTexture( &gContentScans[0][1][2], _binary_data_BombaRoja_tim_start); 
+
+    dcRender_LoadTexture( &gContentScans[0][2][0], _binary_data_MarihuanaRojo_tim_start); 
+    dcRender_LoadTexture( &gContentScans[0][2][1], _binary_data_MarihuanaRojo_tim_start); 
+    dcRender_LoadTexture( &gContentScans[0][2][2], _binary_data_MarihuanaRojo_tim_start);     
+
+    dcRender_LoadTexture( &gContentScans[0][3][0], _binary_data_ZapatoRojo_tim_start); 
+    dcRender_LoadTexture( &gContentScans[0][3][1], _binary_data_ZapatoRojo_tim_start); 
+    dcRender_LoadTexture( &gContentScans[0][3][2], _binary_data_ZapatoRojo_tim_start);  
+
+    //Blue
+    dcRender_LoadTexture( &gContentScans[1][0][0], _binary_data_OsitoAzul_tim_start); 
+    dcRender_LoadTexture( &gContentScans[1][0][1], _binary_data_OsitoAzul_tim_start); 
+    dcRender_LoadTexture( &gContentScans[1][0][2], _binary_data_OsitoAzul_tim_start); 
+
+    dcRender_LoadTexture( &gContentScans[1][1][0], _binary_data_BombaAzul_tim_start); 
+    dcRender_LoadTexture( &gContentScans[1][1][1], _binary_data_BombaAzul_tim_start); 
+    dcRender_LoadTexture( &gContentScans[1][1][2], _binary_data_BombaAzul_tim_start); 
+
+    dcRender_LoadTexture( &gContentScans[1][2][0], _binary_data_MarihuanaAzul_tim_start); 
+    dcRender_LoadTexture( &gContentScans[1][2][1], _binary_data_MarihuanaAzul_tim_start); 
+    dcRender_LoadTexture( &gContentScans[1][2][2], _binary_data_MarihuanaAzul_tim_start);     
+
+    dcRender_LoadTexture( &gContentScans[1][3][0], _binary_data_ZapatoAzul_tim_start); 
+    dcRender_LoadTexture( &gContentScans[1][3][1], _binary_data_ZapatoAzul_tim_start); 
+    dcRender_LoadTexture( &gContentScans[1][3][2], _binary_data_ZapatoAzul_tim_start);  
 }
 
 void TrySpawnSuitcaseAtBelt(unsigned char beltId)
@@ -201,8 +240,11 @@ void TrySpawnSuitcaseAtBelt(unsigned char beltId)
     if ( newSuitcase )
     { 
         //Setup Suitcase 
-        //TODO ~ ramonv ~ difficulty adjustment and shuffles 
-        SetupSuitcase(newSuitcase, GetRandomNumber(0,MAX_SHAPES), GetRandomNumber(0,MAX_PATTERNS), GetRandomNumber(0,2));
+        int maxContentAllowed = 2; 
+        if ( gDiffiultyLevel > 2 ) { ++maxContentAllowed; }
+        if ( gDiffiultyLevel > 3 ) { ++maxContentAllowed; }
+
+        SetupSuitcase(newSuitcase, GetRandomNumber(0,MAX_SHAPES), GetRandomNumber(0,MAX_PATTERNS), GetRandomNumber(0,maxContentAllowed));
 
         const int suitcaseIndex = GetSuitcaseIndex(newSuitcase);
 
@@ -248,9 +290,9 @@ void ValidateSuitcase(int index)
 
     char validator = 0; 
     if ( dcInput_IsPressed(&gAirport.input[beltId], PADRup) )    { validator |= 2; }
-    if ( dcInput_IsPressed(&gAirport.input[beltId], PADRdown) )  { validator |= 4; }
-    if ( dcInput_IsPressed(&gAirport.input[beltId], PADRleft) )  { validator |= 8; }
-    if ( dcInput_IsPressed(&gAirport.input[beltId], PADRright) ) { validator |= 16; }
+    if ( dcInput_IsPressed(&gAirport.input[beltId], PADRleft) )  { validator |= 4; }
+    if ( dcInput_IsPressed(&gAirport.input[beltId], PADRright) ) { validator |= 8; }
+    if ( dcInput_IsPressed(&gAirport.input[beltId], PADRdown) )  { validator |= 16; }
 
     char contentMask = content == 0? 0 : 1 << content;
 
@@ -260,7 +302,7 @@ void ValidateSuitcase(int index)
     { 
         ++gAirport.score;
     }
-    else 
+    else if ( !gCheatInvicible )
     { 
         --gAirport.lives;
         if ( gAirport.lives <= 0 )
@@ -363,6 +405,34 @@ void MoveSuitcase(int index, int elapsed)
     } 
 }
 
+void UpdateCheats(int padId)
+{     
+    if ( dcInput_IsPressed(&gAirport.input[padId], PADL1) && dcInput_IsPressed(&gAirport.input[padId], PADR1) )
+    { 
+        if ( dcInput_BecomesPressed(&gAirport.input[padId],PADLup))
+        { 
+            gAirport.score += gDifficultyScoreUpgrade;
+        }
+
+        if ( dcInput_BecomesPressed(&gAirport.input[padId],PADLdown))
+        { 
+            gAirport.score -= gDifficultyScoreUpgrade;
+            if ( gAirport.score < 0 ) gAirport.score = 0; 
+        }
+
+        if ( dcInput_BecomesPressed(&gAirport.input[padId],PADstart))
+        { 
+            GameState_ChangeGameState(GAMEOVER_GAMESTATE);
+        }
+
+        if ( dcInput_BecomesPressed(&gAirport.input[padId],PADRdown))
+        { 
+            gCheatInvicible = !gCheatInvicible;
+        }
+
+    }
+}
+
 void UpdateAirport(int elapsed)
 {
     //Update pause
@@ -370,6 +440,9 @@ void UpdateAirport(int elapsed)
     {
         gAirport.paused = !gAirport.paused;
     }
+
+    UpdateCheats(0);
+    UpdateCheats(1);
 
     if ( gAirport.paused )
     { 
@@ -382,8 +455,12 @@ void UpdateAirport(int elapsed)
         MoveSuitcase(i, elapsed); 
     }    
 
+    // Update Difficulty
+    gDiffiultyLevel = gAirport.score / gDifficultyScoreUpgrade;
+
     // Trigger new spawns 
-    for (int i=0;i<2;++i)
+    const int numBelts = gDiffiultyLevel > 0 ? 2 : 1; 
+    for (int i=0;i<numBelts;++i)
     { 
         gAirport.nextSpawn[i] -= elapsed;
 
@@ -455,7 +532,7 @@ void RenderScanners(SDC_Render* render, SDC_Camera* camera)
             FntPrint("BELT %d has %d\n", beltId, thisContent);  
             //TODO ~ RUBEN ~ AQUI 
             SDC_Mesh3D* mesh = beltId ? &ScannerQuad_P1_Mesh : &ScannerQuad_P2_Mesh;
-            SDC_TIM_IMAGE* tim = thisContent ? &gImageBad : &gImageOk;
+            TIM_IMAGE* tim = thisContent ? &gImageBad : &gImageOk;
 
             SDC_DrawParams drawParams = {
                 .tim = NULL,
@@ -497,8 +574,27 @@ void RenderAirport(SDC_Render* render, SDC_Camera* camera)
     //Render UI / Score
     CVECTOR color = {127, 127, 127};
     char txt[256];
-    sprintf(txt, "LIVES: %d SCORE: %d \n", gAirport.lives, gAirport.score);
-    dcFont_Print(render, 256, 220, &color, txt);
+    sprintf(txt, "LIVES: %d SCORE: %d %s\n", gAirport.lives, gAirport.score, gCheatInvicible? "[GOD]": "");
+    dcFont_Print(render, 230, 210, &color, txt);
+
+    //Render difficulty bar
+    int diffBar = gDiffiultyLevel > 5 ? 5 : gDiffiultyLevel; 
+
+    CVECTOR color5 = {255,0,0};
+    CVECTOR color4 = {127,0,0};
+    CVECTOR color3 = {255,255,0};
+    CVECTOR color2 = {127,127,0};
+    CVECTOR color1 = {0,127,0};
+    CVECTOR color0 = {0,255,0};
+
+    CVECTOR diffColor =  gDiffiultyLevel > 4 ? color5 : 
+                        (gDiffiultyLevel > 3 ? color4 : 
+                        (gDiffiultyLevel > 2 ? color3 : 
+                        (gDiffiultyLevel > 1 ? color2 : 
+                        (gDiffiultyLevel > 0 ? color1 : 
+                        color0 )))) ; 
+
+    dcRender_DrawSpriteRect(render, NULL, 230, 220, 40*diffBar, 2, NULL, &diffColor);
 
     if ( gAirport.paused )
     {

@@ -35,5 +35,4 @@ void RenderGameOver(SDC_Render* render, SDC_Camera* camera)
     dcFont_Print(render,256,50,&color,"GAME OVER"); 
     sprintf(txt, "FINAL SCORE: %d \n", score);
     dcFont_Print(render, 256, 120, &color, txt);
-    dcFont_Print(render, 256, 220, &color, "PRESS START TO EXIT\n");
 }
