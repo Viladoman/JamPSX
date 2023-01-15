@@ -68,7 +68,8 @@ extern unsigned long _binary_data_PistolaAzul_tim_start[];
 extern unsigned long _binary_data_JeringaAzul_tim_start[];
 extern unsigned long _binary_data_MermaidAzul_tim_start[];
 
-extern unsigned long _binary_data_Path_Texture_tim_start[];
+extern unsigned long _binary_data_HeartEmpty_tim_start[];
+extern unsigned long _binary_data_HeartFull_tim_start[];
 
 // Audios
 extern unsigned long _binary_data_HeartLoose_vag_start[];
@@ -77,6 +78,8 @@ extern unsigned long _binary_data_ItemOK_vag_start[];
 extern SDC_Audio gAudio;
 
 SDC_TIM_IMAGE gContentScans[2][MAX_ITEM_CATEGORIES][ITEM_VARIANTS];
+SDC_TIM_IMAGE gHeartFull; 
+SDC_TIM_IMAGE gHeartEmpty; 
 
 typedef struct 
 {
@@ -219,6 +222,9 @@ void StartAirport()
     dcRender_LoadTexture(&gAirport.groundP1, _binary_data_Game_Ground_P1_tim_start);
     dcRender_LoadTexture(&gAirport.groundP2, _binary_data_Game_Ground_P2_tim_start);
     dcRender_LoadTexture(&gAirport.scannersTex, _binary_data_Scanners_Texture_tim_start);
+
+    dcRender_LoadTexture(&gHeartEmpty, _binary_data_HeartEmpty_tim_start);
+    dcRender_LoadTexture(&gHeartFull, _binary_data_HeartFull_tim_start);
 
     //Icons
     dcRender_LoadTexture( &gContentScans[0][0][0], _binary_data_CamisetaRoja_tim_start); 
@@ -611,6 +617,51 @@ void RenderScanners(SDC_Render* render, SDC_Camera* camera)
     }
 }
 
+void RenderUI(SDC_Render* render)
+{ 
+    DVECTOR uv;
+    uv.vx = 0;
+    uv.vy = 0;
+
+    CVECTOR color = {127, 127, 127};
+    CVECTOR colorBlack = {0, 0, 0};
+    char txt[256];
+    sprintf(txt, "%d %s\n", gAirport.score, gCheatInvicible? "[GOD]": "");
+    dcFont_Print(render, 400, 215, &colorBlack, txt);
+
+    //Hearts
+    int startX = 210; 
+    for ( int i=0;i<gStartLives;++i)
+    { 
+        dcRender_DrawSpriteRect(render, i >= gAirport.lives? &gHeartEmpty : &gHeartFull, startX, 210, 32, 16, &uv, &color);
+        startX += 32+5;
+    }
+
+    //Render difficulty bar
+    int diffBar = gDiffiultyLevel > 5 ? 5 : gDiffiultyLevel; 
+
+    CVECTOR color5 = {255,0,0};
+    CVECTOR color4 = {127,0,0};
+    CVECTOR color3 = {127,0,0};
+    CVECTOR color2 = {0,127,0};
+    CVECTOR color1 = {0,127,0};
+    CVECTOR color0 = {0,255,0};
+
+    CVECTOR diffColor =  gDiffiultyLevel > 4 ? color5 : 
+                        (gDiffiultyLevel > 3 ? color4 : 
+                        (gDiffiultyLevel > 2 ? color3 : 
+                        (gDiffiultyLevel > 1 ? color2 : 
+                        (gDiffiultyLevel > 0 ? color1 : 
+                        color0 )))) ; 
+
+    dcRender_DrawSpriteRect(render, NULL, 210, 225, 39*diffBar, 2, NULL, &diffColor);
+
+    if ( gAirport.paused )
+    {
+        dcFont_Print(render, 256, 200, &colorBlack, "PAUSED");
+    }
+}
+
 void RenderAirport(SDC_Render* render, SDC_Camera* camera)
 {
     for (int i=0;i<2;++i)
@@ -623,33 +674,6 @@ void RenderAirport(SDC_Render* render, SDC_Camera* camera)
 
     RenderScanners(render, camera);
 
-    //Render UI / Score
-    CVECTOR color = {127, 127, 127};
-    char txt[256];
-    sprintf(txt, "LIVES: %d SCORE: %d %s\n", gAirport.lives, gAirport.score, gCheatInvicible? "[GOD]": "");
-    dcFont_Print(render, 230, 210, &color, txt);
-
-    //Render difficulty bar
-    int diffBar = gDiffiultyLevel > 5 ? 5 : gDiffiultyLevel; 
-
-    CVECTOR color5 = {255,0,0};
-    CVECTOR color4 = {127,0,0};
-    CVECTOR color3 = {255,255,0};
-    CVECTOR color2 = {127,127,0};
-    CVECTOR color1 = {0,127,0};
-    CVECTOR color0 = {0,255,0};
-
-    CVECTOR diffColor =  gDiffiultyLevel > 4 ? color5 : 
-                        (gDiffiultyLevel > 3 ? color4 : 
-                        (gDiffiultyLevel > 2 ? color3 : 
-                        (gDiffiultyLevel > 1 ? color2 : 
-                        (gDiffiultyLevel > 0 ? color1 : 
-                        color0 )))) ; 
-
-    dcRender_DrawSpriteRect(render, NULL, 230, 220, 40*diffBar, 2, NULL, &diffColor);
-
-    if ( gAirport.paused )
-    {
-        dcFont_Print(render, 256, 200, &color, "PAUSED");
-    }
+    RenderUI(render);
+   
 }
