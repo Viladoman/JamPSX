@@ -303,6 +303,8 @@ void TrySpawnSuitcaseAtBelt(unsigned char beltId)
         //Locate initial suitcase position
         newSuitcase->position = GetNodes(beltId)[0];
         newSuitcase->yaw = GetRandomNumber(0,4096); 
+        
+        SuitcaseUpdateRotation(newSuitcase);
     }
 }
 
@@ -566,33 +568,25 @@ void UpdateAirport(int elapsed)
 }
 
 void RenderBackground(SDC_Render* render, SDC_Camera* camera) {
-    // SVECTOR rotation = {0};
-    // VECTOR translation = {0, 0, 0, 0};
-    // MATRIX transform;
-
-    // RotMatrix(&rotation, &transform);
-    // TransMatrix(&transform, &translation);
-
     MATRIX MVP = camera->viewMatrix;
-    // dcCamera_ApplyCameraTransform(camera, &transform, &MVP);
 
     drawParamsBackground.tim = &gAirport.scannersTex;
-    dcRender_DrawMeshFast(render, &Exit_P1_Mesh, &MVP, &drawParamsBackground );
-    dcRender_DrawMeshFast(render, &Exit_P2_Mesh, &MVP, &drawParamsBackground );
+    dcRender_DrawMeshFast(render, &Exit_P1_Mesh, &MVP, &drawParamsBackground, 0 );
+    dcRender_DrawMeshFast(render, &Exit_P2_Mesh, &MVP, &drawParamsBackground, 0 );
 
-    dcRender_DrawMeshFast(render, &Scanner_P1_Mesh, &MVP, &drawParamsBackground );
-    dcRender_DrawMeshFast(render, &Scanner_P2_Mesh, &MVP, &drawParamsBackground );
+    dcRender_DrawMeshFast(render, &Scanner_P1_Mesh, &MVP, &drawParamsBackground, 0 );
+    dcRender_DrawMeshFast(render, &Scanner_P2_Mesh, &MVP, &drawParamsBackground, 0 );
 
     drawParamsBackground.tim = &gAirport.groundP1;
-    dcRender_DrawMeshFast(render, &Game_Ground_P1_Mesh, &MVP, &drawParamsBackground );
+    dcRender_DrawMeshFast(render, &Game_Ground_P1_Mesh, &MVP, &drawParamsBackground, 0 );
     drawParamsBackground.tim = &gAirport.groundP2;
-    dcRender_DrawMeshFast(render, &Game_Ground_P2_Mesh, &MVP, &drawParamsBackground );
+    dcRender_DrawMeshFast(render, &Game_Ground_P2_Mesh, &MVP, &drawParamsBackground, 0 );
 
     drawParamsBackground.tim = &gAirport.pathTexture;
-    dcRender_DrawMeshFast(render, &Path_P1_Mesh, &MVP, &drawParamsBackground );
-    dcRender_DrawMeshFast(render, &Path_P2_Mesh, &MVP, &drawParamsBackground );    
+    dcRender_DrawMeshFast(render, &Path_P1_Mesh, &MVP, &drawParamsBackground, gPathOffset );
+    dcRender_DrawMeshFast(render, &Path_P2_Mesh, &MVP, &drawParamsBackground, gPathOffset );    
 
-    dcRender_DrawMeshFast(render, &Divider_Mesh, &MVP, &drawParamsBackgroundBlack );
+    dcRender_DrawMeshFast(render, &Divider_Mesh, &MVP, &drawParamsBackgroundBlack, 0 );
 }
 
 void RenderScanners(SDC_Render* render, SDC_Camera* camera)
@@ -628,19 +622,8 @@ void RenderScanners(SDC_Render* render, SDC_Camera* camera)
                 drawParams.constantColor.g = gBlueColorIntensity; 
                 drawParams.constantColor.b = gBlueColorIntensity; 
             }
-
-            SVECTOR rotation = {0};
-            VECTOR translation = {0, 0, 0, 0};
-            MATRIX transform;
-
-            RotMatrix(&rotation, &transform);
-            TransMatrix(&transform, &translation);
-
-            MATRIX MVP;
-            dcCamera_ApplyCameraTransform(camera, &transform, &MVP);
-
             drawParams.tim = tim;
-            dcRender_DrawMeshFast(render, mesh, &MVP, &drawParams, 0 );
+            dcRender_DrawMeshFast(render, mesh, &camera->viewMatrix, &drawParams, 0 );
         }
     }
 }

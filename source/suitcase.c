@@ -12,30 +12,18 @@
 #include "meshes/Baggage_E.h"
 #include "meshes/Baggage_Triforce.h"
 
-/* placeholder */
-
-#define CUBESIZE 196 
-
-static SDC_Vertex cube_vertices[] = {
-    { {-CUBESIZE / 2, -CUBESIZE / 2, -CUBESIZE / 2, 0} }, { {CUBESIZE / 2, -CUBESIZE / 2, -CUBESIZE / 2, 0} },
-    { {CUBESIZE / 2, CUBESIZE / 2, -CUBESIZE / 2, 0  } }, { {-CUBESIZE / 2, CUBESIZE / 2, -CUBESIZE / 2, 0  } },
-    { {-CUBESIZE / 2, -CUBESIZE / 2, CUBESIZE / 2, 0 } }, { {CUBESIZE / 2, -CUBESIZE / 2, CUBESIZE / 2, 0   } },
-    { {CUBESIZE / 2, CUBESIZE / 2, CUBESIZE / 2, 0   } }, { {-CUBESIZE / 2, CUBESIZE / 2, CUBESIZE / 2, 0   } },
-};
-
-static u_short cube_indices[] = {
-    0, 2, 1, 2, 0, 3,  1, 6, 5, 6, 1, 2,  5, 7, 4, 7, 5, 6,  4, 3, 0, 3, 4, 7,  4, 1, 5, 1, 4, 0,  6, 3, 7, 3, 6, 2,
-};
-
-static SDC_Mesh3D cubeMesh = { cube_vertices, cube_indices, NULL, 36, 8, POLIGON_VERTEX };
-
-/* end placeholder */
-
 SDC_Mesh3D* gSuitcaseShapes[MAX_SHAPES] = { &Baggage_A_Mesh, &Baggage_B_Mesh, &Baggage_C_Mesh, &Baggage_D_Mesh, &Baggage_E_Mesh, &Baggage_Triforce_Mesh }; //TODO ~ ramonv ~ to be implemented
 CVECTOR gSuitcasesColors[MAX_PATTERNS] = { {127, 0, 0},{127, 127, 0},{127, 0, 127},{0, 127, 0},{0, 127, 127} };
 
 Suitcase gSuitcases[MAX_SUITCASES];
 bool     gSuitcasesActives[MAX_SUITCASES];
+
+SDC_DrawParams gSuitDrawParams = {
+    .tim = NULL,
+    .constantColor = {127,127,127},
+    .bLighting = 1,
+    .bUseConstantColor = 1
+};
 
 void ResetSuitcases()
 { 
@@ -105,21 +93,20 @@ void SetupSuitcase(Suitcase* suitcase, unsigned int shape, unsigned int pattern,
     suitcase->color = gSuitcasesColors[pattern % MAX_PATTERNS];
 }
 
+void SuitcaseUpdateRotation(Suitcase* suitcase)
+{
+    SVECTOR rotation = {.vx = suitcase->pitch, .vy = suitcase->yaw, .vz = 0};
+    RotMatrix(&rotation,&suitcase->rotMtx);
+}
+
 void RenderSuitcase(SDC_Render* render, SDC_Camera* camera, Suitcase* suitcase)
 {
-    SDC_DrawParams drawParams = {
-        .tim = NULL,
-        .constantColor = suitcase->color,
-        .bLighting = 1,
-        .bUseConstantColor = 1
-    };
-
-    MATRIX transform; 
-    SVECTOR rotation = {.vx = suitcase->pitch, .vy = suitcase->yaw, .vz = 0};
-    RotMatrix(&rotation,&transform);
+    gSuitDrawParams.constantColor = suitcase->color;
+    MATRIX transform = suitcase->rotMtx;
     TransMatrix(&transform, &(suitcase->position));
+
     dcCamera_ApplyCameraTransform(camera, &transform, &transform);
-    dcRender_DrawMeshFast(render, suitcase->mesh, &transform, &drawParams, 0);
+    dcRender_DrawMeshFast(render, suitcase->mesh, &transform, &gSuitDrawParams, 0);
 }
 
 void RenderSuitcases(SDC_Render* render, SDC_Camera* camera)
