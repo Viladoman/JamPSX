@@ -23,8 +23,5 @@ rem ..\tools\BMP2TIM\BMP2TIM.exe textures\Scanners_Texture.bmp data\Scanners_Tex
 ..\tools\BMP2TIM\BMP2TIM.exe textures\MermaidRoja.bmp data\MermaidRoja.tim 4 -clut=112,482 -org=896,192
 ..\tools\BMP2TIM\BMP2TIM.exe textures\MermaidAzul.bmp data\MermaidAzul.tim 4 -clut=128,482 -org=960,192
 
-rem ..\tools\BMP2TIM\BMP2TIM.exe textures\MarihuanaRojo.bmp data\MarihuanaRojo.tim 4 -clut=64,480 -org=640,256
-rem ..\tools\BMP2TIM\BMP2TIM.exe textures\OsitoAzul.bmp data\OsitoAzul.tim 4 -clut=48,480 -org=640,256
-rem ..\tools\BMP2TIM\BMP2TIM.exe textures\OsitoRojo.bmp data\OsitoRojo.tim 4 -clut=64,480 -org=640,320
-rem ..\tools\BMP2TIM\BMP2TIM.exe textures\ZapatoAzul.bmp data\ZapatoAzul.tim 4 -clut=48,480 -org=640,256
-rem ..\tools\BMP2TIM\BMP2TIM.exe textures\ZapatoRojo.bmp data\ZapatoRojo.tim 4 -clut=64,480 -org=640,320
+..\tools\BMP2TIM\BMP2TIM.exe textures\DESCONTROL_PressStart.bmp data\DESCONTROL.tim 8 -clut=0,480 -org=640,0
+..\tools\BMP2TIM\BMP2TIM.exe textures\GameOver.bmp data\GameOver.tim 8 -clut=0,480 -org=640,0 -mpink
