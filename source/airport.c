@@ -38,6 +38,9 @@ static bool gCheatInvicible = false;
 static int gRedColorIntensity = 255; 
 static int gBlueColorIntensity = 150; 
 
+static int gPathOffset = 0; 
+static int gBeltSpeed = 4;
+
 // Diff:
 // 0) single red belt | 2 options | Slow 
 // 1) double belt | 2 options | slow 
@@ -498,6 +501,12 @@ void UpdateCheats(int padId)
     }
 }
 
+void UpdateBelts(int elapsed)
+{ 
+    gPathOffset -= elapsed * gBeltSpeed;
+    while (gPathOffset < 0) { gPathOffset += 64; }
+}
+
 void UpdateAirport(int elapsed)
 {
     //Update pause
@@ -513,6 +522,9 @@ void UpdateAirport(int elapsed)
     { 
         return; 
     }
+
+    // Update World 
+    UpdateBelts(elapsed);
 
     // Move current suitcases
     for (int i=0;i<MAX_SUITCASES;++i)
@@ -559,25 +571,25 @@ void RenderBackground(SDC_Render* render, SDC_Camera* camera) {
     dcCamera_ApplyCameraTransform(camera, &transform, &MVP);
 
     drawParams.tim = &gAirport.scannersTex;
-    dcRender_DrawMeshFast(render, &Exit_P1_Mesh, &MVP, &drawParams );
-    dcRender_DrawMeshFast(render, &Exit_P2_Mesh, &MVP, &drawParams );
+    dcRender_DrawMeshFast(render, &Exit_P1_Mesh, &MVP, &drawParams, 0 );
+    dcRender_DrawMeshFast(render, &Exit_P2_Mesh, &MVP, &drawParams, 0 );
 
-    dcRender_DrawMeshFast(render, &Scanner_P1_Mesh, &MVP, &drawParams );
-    dcRender_DrawMeshFast(render, &Scanner_P2_Mesh, &MVP, &drawParams );
+    dcRender_DrawMeshFast(render, &Scanner_P1_Mesh, &MVP, &drawParams, 0 );
+    dcRender_DrawMeshFast(render, &Scanner_P2_Mesh, &MVP, &drawParams, 0 );
 
     drawParams.tim = &gAirport.groundP1;
-    dcRender_DrawMeshFast(render, &Game_Ground_P1_Mesh, &MVP, &drawParams );
+    dcRender_DrawMeshFast(render, &Game_Ground_P1_Mesh, &MVP, &drawParams, 0 );
     drawParams.tim = &gAirport.groundP2;
-    dcRender_DrawMeshFast(render, &Game_Ground_P2_Mesh, &MVP, &drawParams );
+    dcRender_DrawMeshFast(render, &Game_Ground_P2_Mesh, &MVP, &drawParams, 0 );
     drawParams.tim = NULL;
 
     drawParams.tim = &gAirport.pathTexture;
-    dcRender_DrawMeshFast(render, &Path_P1_Mesh, &MVP, &drawParams );
-    dcRender_DrawMeshFast(render, &Path_P2_Mesh, &MVP, &drawParams );    
+    dcRender_DrawMeshFast(render, &Path_P1_Mesh, &MVP, &drawParams, gPathOffset );
+    dcRender_DrawMeshFast(render, &Path_P2_Mesh, &MVP, &drawParams, gPathOffset );    
     drawParams.tim = NULL;
 
     drawParams.constantColor = blackColor;
-    dcRender_DrawMeshFast(render, &Divider_Mesh, &MVP, &drawParams );
+    dcRender_DrawMeshFast(render, &Divider_Mesh, &MVP, &drawParams, 0 );
 }
 
 void RenderScanners(SDC_Render* render, SDC_Camera* camera)
@@ -626,7 +638,7 @@ void RenderScanners(SDC_Render* render, SDC_Camera* camera)
             dcCamera_ApplyCameraTransform(camera, &transform, &MVP);
 
             drawParams.tim = tim;
-            dcRender_DrawMeshFast(render, mesh, &MVP, &drawParams );
+            dcRender_DrawMeshFast(render, mesh, &MVP, &drawParams, 0 );
         }
     }
 }

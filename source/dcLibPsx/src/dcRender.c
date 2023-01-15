@@ -470,7 +470,7 @@ void dcRender_DrawMesh(SDC_Render* render,  SDC_Mesh3D* mesh, MATRIX* transform,
     }
 }
 
-void dcRender_DrawMeshFast(SDC_Render* render,  SDC_Mesh3D* mesh, MATRIX* transform, SDC_DrawParams* drawParams) 
+void dcRender_DrawMeshFast(SDC_Render* render,  SDC_Mesh3D* mesh, MATRIX* transform, SDC_DrawParams* drawParams, u_short offsetU) 
 {
     assert(render && mesh && transform);
     u_long *orderingTable = render->orderingTable[render->doubleBufferIndex];
@@ -572,7 +572,7 @@ void dcRender_DrawMeshFast(SDC_Render* render,  SDC_Mesh3D* mesh, MATRIX* transf
             setRGB1(polyGT3, c1.r, c1.g, c1.b);
             setRGB2(polyGT3, c2.r, c2.g, c2.b);
 
-            SET_UV3_FIX(polyGT3, vertexs[index0].u, vertexs[index0].v, vertexs[index1].u, vertexs[index1].v, vertexs[index2].u, vertexs[index2].v, drawParams->tim->prect.x, drawParams->tim->prect.y);
+            SET_UV3_FIX(polyGT3, vertexs[index0].u + offsetU, vertexs[index0].v, vertexs[index1].u + offsetU, vertexs[index1].v, vertexs[index2].u + offsetU, vertexs[index2].v, drawParams->tim->prect.x, drawParams->tim->prect.y);
             polyGT3->tpage = tpage; /*texture page*/
             polyGT3->clut = clut;   /*texture CLUT*/
 

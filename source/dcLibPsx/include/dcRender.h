@@ -146,7 +146,7 @@ void dcRender_ReportPrimitivesSize(SDC_Render* render);
 void dcRender_LoadTexture(SDC_TIM_IMAGE* tim, u_long* texture);
 void dcRender_DrawSpriteRect(SDC_Render* render, const SDC_TIM_IMAGE *tim, short x, short y, short w, short h, const DVECTOR *uv, const CVECTOR *color);
 void dcRender_DrawMesh(SDC_Render* render,  SDC_Mesh3D* mesh, MATRIX* transform, SDC_DrawParams* drawParams );
-void dcRender_DrawMeshFast(SDC_Render* render,  SDC_Mesh3D* mesh, MATRIX* transform, SDC_DrawParams* drawParams );
+void dcRender_DrawMeshFast(SDC_Render* render,  SDC_Mesh3D* mesh, MATRIX* transform, SDC_DrawParams* drawParams, u_short offsetU );
 void dcRender_DrawLine(SDC_Render* render, SVECTOR* v0, SVECTOR* v1, MATRIX* transform, CVECTOR* color, u_short segments);
 
 /********** Light helper functions **********/
