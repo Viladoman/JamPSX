@@ -20,8 +20,8 @@ unsigned int dcPerformance_EndCounter() {
     return counterAfterUpdate - gCounterBeforeUpdate;
 }
 
-unsigned int dcPerformance_EndCounterPrintf() {
+unsigned int dcPerformance_EndCounterPrintf(const char *label) {
     int counter = dcPerformance_EndCounter();
-    printf("Counter %d\n", counter);
+    printf("Counter '%s': %d\n", label, counter);
     return counter;
 }

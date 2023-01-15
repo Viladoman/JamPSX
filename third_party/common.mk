@@ -39,14 +39,15 @@ CPPFLAGS += -Werror -Wall
 LDFLAGS += -Wl,-Map=$(BINDIR)$(TARGET).map -nostdlib -T$(LDSCRIPT) -static -Wl,--gc-sections
 LDFLAGS += $(ARCHFLAGS) -Wl,--oformat=$(FORMAT)
 
-CPPFLAGS_Release += -Os
-LDFLAGS_Release += -Os
+CPPFLAGS_Release += -Os -Ofast
+LDFLAGS_Release += -Os -Ofast
 
-CPPFLAGS_Debug += -Og
+CPPFLAGS_Debug += -Og -g
 CPPFLAGS_Coverage += -Og
+LDFLAGS_Debug += -g
 
-LDFLAGS += -g
-CPPFLAGS += -g
+# LDFLAGS += -g
+# CPPFLAGS += -g
 
 CPPFLAGS += $(CPPFLAGS_$(BUILD))
 LDFLAGS += $(LDFLAGS_$(BUILD))

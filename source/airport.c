@@ -5,6 +5,7 @@
 #include "dcInput.h"
 #include "dcFont.h"
 #include "dcAudio.h"
+#include "dcPerformance.h"
 
 #include "suitcase.h"
 #include "gamestate.h"
@@ -37,6 +38,20 @@ static bool gCheatInvicible = false;
 
 static int gRedColorIntensity = 255; 
 static int gBlueColorIntensity = 150; 
+
+SDC_DrawParams drawParamsBackground = {
+    .tim = NULL,
+    .constantColor = {255, 255, 255},
+    .bLighting = 1,
+    .bUseConstantColor = 1
+};
+
+SDC_DrawParams drawParamsBackgroundBlack = {
+    .tim = NULL,
+    .constantColor = {0,0,0},
+    .bLighting = 1,
+    .bUseConstantColor = 1
+};
 
 // Diff:
 // 0) single red belt | 2 options | Slow 
@@ -537,49 +552,44 @@ void UpdateAirport(int elapsed)
 }
 
 void RenderBackground(SDC_Render* render, SDC_Camera* camera) {
-    SDC_DrawParams drawParams = {
-        .tim = NULL,
-        .constantColor = {255, 255, 255},
-        .bLighting = 1,
-        .bUseConstantColor = 1
-    };
+    // SVECTOR rotation = {0};
+    // VECTOR translation = {0, 0, 0, 0};
+    // MATRIX transform;
 
-    CVECTOR blackColor = {0,0,0};
+    // RotMatrix(&rotation, &transform);
+    // TransMatrix(&transform, &translation);
 
-    SVECTOR rotation = {0};
-    VECTOR translation = {0, 0, 0, 0};
-    MATRIX transform;
+    MATRIX MVP = camera->viewMatrix;
+    // dcCamera_ApplyCameraTransform(camera, &transform, &MVP);
 
-    RotMatrix(&rotation, &transform);
-    TransMatrix(&transform, &translation);
+    drawParamsBackground.tim = &gAirport.scannersTex;
+    dcRender_DrawMeshFast(render, &Exit_P1_Mesh, &MVP, &drawParamsBackground );
+    dcRender_DrawMeshFast(render, &Exit_P2_Mesh, &MVP, &drawParamsBackground );
 
-    MATRIX MVP;
-    dcCamera_ApplyCameraTransform(camera, &transform, &MVP);
+    dcRender_DrawMeshFast(render, &Scanner_P1_Mesh, &MVP, &drawParamsBackground );
+    dcRender_DrawMeshFast(render, &Scanner_P2_Mesh, &MVP, &drawParamsBackground );
 
-    drawParams.tim = &gAirport.scannersTex;
-    dcRender_DrawMeshFast(render, &Exit_P1_Mesh, &MVP, &drawParams );
-    dcRender_DrawMeshFast(render, &Exit_P2_Mesh, &MVP, &drawParams );
+    drawParamsBackground.tim = &gAirport.groundP1;
+    dcRender_DrawMeshFast(render, &Game_Ground_P1_Mesh, &MVP, &drawParamsBackground );
+    drawParamsBackground.tim = &gAirport.groundP2;
+    dcRender_DrawMeshFast(render, &Game_Ground_P2_Mesh, &MVP, &drawParamsBackground );
 
-    dcRender_DrawMeshFast(render, &Scanner_P1_Mesh, &MVP, &drawParams );
-    dcRender_DrawMeshFast(render, &Scanner_P2_Mesh, &MVP, &drawParams );
+    drawParamsBackground.tim = &gAirport.pathTexture;
+    dcRender_DrawMeshFast(render, &Path_P1_Mesh, &MVP, &drawParamsBackground );
+    dcRender_DrawMeshFast(render, &Path_P2_Mesh, &MVP, &drawParamsBackground );    
 
-    drawParams.tim = &gAirport.groundP1;
-    dcRender_DrawMeshFast(render, &Game_Ground_P1_Mesh, &MVP, &drawParams );
-    drawParams.tim = &gAirport.groundP2;
-    dcRender_DrawMeshFast(render, &Game_Ground_P2_Mesh, &MVP, &drawParams );
-    drawParams.tim = NULL;
-
-    drawParams.tim = &gAirport.pathTexture;
-    dcRender_DrawMeshFast(render, &Path_P1_Mesh, &MVP, &drawParams );
-    dcRender_DrawMeshFast(render, &Path_P2_Mesh, &MVP, &drawParams );    
-    drawParams.tim = NULL;
-
-    drawParams.constantColor = blackColor;
-    dcRender_DrawMeshFast(render, &Divider_Mesh, &MVP, &drawParams );
+    dcRender_DrawMeshFast(render, &Divider_Mesh, &MVP, &drawParamsBackgroundBlack );
 }
 
 void RenderScanners(SDC_Render* render, SDC_Camera* camera)
 {
+    SDC_DrawParams drawParams = {
+        .tim = NULL,
+        .constantColor = {127, 127, 127},
+        .bLighting = 0,
+        .bUseConstantColor = 1
+    };
+
     for (int i=0;i<MAX_SUITCASES;++i)
     {
         unsigned char beltId = gAirport.gSuitcaseStates[i].beltId;
@@ -592,14 +602,6 @@ void RenderScanners(SDC_Render* render, SDC_Camera* camera)
             
             SDC_Mesh3D* mesh = beltId ? &ScannerQuad_P2_Mesh : &ScannerQuad_P1_Mesh;
             SDC_TIM_IMAGE* tim = &(gContentScans[beltId][thisContent][thisContentVariation]);
-
-            SDC_DrawParams drawParams = {
-                .tim = NULL,
-                .constantColor = {127, 127, 127},
-                .bLighting = 0,
-                .bUseConstantColor = 1
-            };
-
             if ( beltId == 0 )
             {
                 drawParams.constantColor.r = gRedColorIntensity;
@@ -696,11 +698,20 @@ void RenderAirport(SDC_Render* render, SDC_Camera* camera)
         dcInput_UpdateInput(&gAirport.input[i]);
     }
 
+    // dcPerformance_BeginCounter();
     RenderBackground(render, camera); 
+    // dcPerformance_EndCounterPrintf("RenderBackground");
+
+    // dcPerformance_BeginCounter();
     RenderSuitcases(render, camera);
+    // dcPerformance_EndCounterPrintf("RenderSuitcases");
 
+    // dcPerformance_BeginCounter();
     RenderScanners(render, camera);
+    // dcPerformance_EndCounterPrintf("RenderScanners");
 
+    // dcPerformance_BeginCounter();
     RenderUI(render);
+    // dcPerformance_EndCounterPrintf("RenderUI");
    
 }

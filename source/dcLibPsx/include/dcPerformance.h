@@ -6,6 +6,6 @@
 void dcPerformance_Init();
 void dcPerformance_BeginCounter();
 unsigned int dcPerformance_EndCounter();
-unsigned int dcPerformance_EndCounterPrintf();
+unsigned int dcPerformance_EndCounterPrintf(const char *label);
 
 #endif
