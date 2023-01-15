@@ -50,19 +50,24 @@ int main(void)
     dcCamera_SetCameraPosition(&camera, 0, cameraHeight, distance);
     dcCamera_LookAt(&camera, &VECTOR_ZERO);
 
-    CVECTOR ambientColor = {10, 10, 10};
+    short ambientPow = 25;
+    CVECTOR ambientColor = {ambientPow, ambientPow, ambientPow};
     dcRender_SetAmbientColor(&render, &ambientColor );
 
-    SVECTOR lightDir = {DC_ONE, 0, 0 };
-    SVECTOR lightColor = {DC_ONE, DC_ONE, DC_ONE};
+    short lightPow = 1024+700;
+    SVECTOR lightDir = {DC_ONE, DC_ONE, 0 };
+    lightDir = dcMath_Normalize(&lightDir);
+    SVECTOR lightColor = {lightPow, lightPow, lightPow};
     dcRender_SetLight(&render, 0, &lightDir, &lightColor);
 
-    SVECTOR lightDir1 = {0, DC_ONE, 0 };
-    SVECTOR lightColor1 = {DC_ONE/2, DC_ONE/2, DC_ONE/2};
+    short lightPow2 = 1024;
+    SVECTOR lightDir1 = {-DC_ONE, DC_ONE, 0 };
+    lightDir1 = dcMath_Normalize(&lightDir1);
+    SVECTOR lightColor1 = {lightPow2, lightPow2, lightPow2};
     dcRender_SetLight(&render, 1, &lightDir1, &lightColor1);
 
-    GameState_ChangeGameState(MAINMENU_GAMESTATE);
-    //GameState_ChangeGameState(AIRPORT_GAMESTATE);
+    // GameState_ChangeGameState(MAINMENU_GAMESTATE);
+    GameState_ChangeGameState(AIRPORT_GAMESTATE);
 
     // Font
     dcFont_UseSystemFont();
