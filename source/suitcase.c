@@ -97,9 +97,10 @@ void DestroySuitcase(Suitcase* input)
     }
 }
 
-void SetupSuitcase(Suitcase* suitcase, unsigned int shape, unsigned int pattern, unsigned char content)
+void SetupSuitcase(Suitcase* suitcase, unsigned int shape, unsigned int pattern, unsigned char content, unsigned char contentVariation)
 {
     suitcase->content = content % MAX_ITEM_CATEGORIES; 
+    suitcase->contentVariation = contentVariation % ITEM_VARIANTS; 
     suitcase->mesh = gSuitcaseShapes[shape % MAX_SHAPES];
     suitcase->color = gSuitcasesColors[pattern % MAX_PATTERNS];
 }

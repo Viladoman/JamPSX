@@ -24,8 +24,6 @@
 
 #include "meshes/Divider.h"
 
-#define ITEM_VARIANTS 3
-
 static int gSpawnTimerBase  = 100; //5 * 250; 
 static int gSpawnTimerRange = 50; //3 * 250; 
 static int gScannerWaitTime = 50; //3 * 250; 
@@ -35,6 +33,9 @@ static int gDifficultyScoreUpgrade = 10;
 static int gDiffiultyLevel  = 0; 
 
 static bool gCheatInvicible = false; 
+
+static int gRedColorIntensity = 127; 
+static int gBlueColorIntensity = 60; 
 
 // Diff:
 // 0) single red belt | 2 options | Slow 
@@ -49,16 +50,24 @@ extern unsigned long _binary_data_Game_Ground_P1_tim_start[];
 extern unsigned long _binary_data_Game_Ground_P2_tim_start[];
 extern unsigned long _binary_data_Scanners_Texture_tim_start[];
 
-extern unsigned long _binary_data_BombaAzul_tim_start[];
+extern unsigned long _binary_data_CamisetaRoja_tim_start[];
 extern unsigned long _binary_data_BombaRoja_tim_start[];
-extern unsigned long _binary_data_MarihuanaAzul_tim_start[];
-extern unsigned long _binary_data_MarihuanaRojo_tim_start[];
-extern unsigned long _binary_data_OsitoAzul_tim_start[];
-extern unsigned long _binary_data_OsitoRojo_tim_start[];
-extern unsigned long _binary_data_ZapatoAzul_tim_start[];
-extern unsigned long _binary_data_ZapatoRojo_tim_start[];
+extern unsigned long _binary_data_DrogasRoja_tim_start[];
+extern unsigned long _binary_data_AbuelaRoja_tim_start[];
+extern unsigned long _binary_data_CamisetaAzul_tim_start[];
+extern unsigned long _binary_data_BombaAzul_tim_start[];
+extern unsigned long _binary_data_DrogasAzul_tim_start[];
+extern unsigned long _binary_data_AbuelaAzul_tim_start[];
+extern unsigned long _binary_data_SocksRoja_tim_start[];
+extern unsigned long _binary_data_PistolaRoja_tim_start[];
+extern unsigned long _binary_data_JeringaRoja_tim_start[];
+extern unsigned long _binary_data_MermaidRoja_tim_start[];
+extern unsigned long _binary_data_SocksAzul_tim_start[];
+extern unsigned long _binary_data_PistolaAzul_tim_start[];
+extern unsigned long _binary_data_JeringaAzul_tim_start[];
+extern unsigned long _binary_data_MermaidAzul_tim_start[];
 
-SDC_TIM_IMAGE gContentScans[MAX_ITEM_CATEGORIES][ITEM_VARIANTS];
+SDC_TIM_IMAGE gContentScans[2][MAX_ITEM_CATEGORIES][ITEM_VARIANTS];
 
 typedef struct 
 {
@@ -201,21 +210,23 @@ void StartAirport()
     dcRender_LoadTexture(&gAirport.scannersTex, _binary_data_Scanners_Texture_tim_start);
 
     //Icons
-    dcRender_LoadTexture( &gContentScans[0][0], _binary_data_OsitoRojo_tim_start); 
-    dcRender_LoadTexture( &gContentScans[0][1], _binary_data_OsitoRojo_tim_start); 
-    dcRender_LoadTexture( &gContentScans[0][2], _binary_data_OsitoRojo_tim_start); 
+    dcRender_LoadTexture( &gContentScans[0][0][0], _binary_data_CamisetaRoja_tim_start); 
+    dcRender_LoadTexture( &gContentScans[0][0][1], _binary_data_SocksRoja_tim_start); 
+    dcRender_LoadTexture( &gContentScans[0][1][0], _binary_data_BombaRoja_tim_start); 
+    dcRender_LoadTexture( &gContentScans[0][1][1], _binary_data_PistolaRoja_tim_start);  
+    dcRender_LoadTexture( &gContentScans[0][2][0], _binary_data_DrogasRoja_tim_start); 
+    dcRender_LoadTexture( &gContentScans[0][2][1], _binary_data_JeringaRoja_tim_start); 
+    dcRender_LoadTexture( &gContentScans[0][3][0], _binary_data_AbuelaRoja_tim_start); 
+    dcRender_LoadTexture( &gContentScans[0][3][1], _binary_data_MermaidRoja_tim_start); 
 
-    dcRender_LoadTexture( &gContentScans[1][0], _binary_data_BombaRoja_tim_start); 
-    dcRender_LoadTexture( &gContentScans[1][1], _binary_data_BombaRoja_tim_start); 
-    dcRender_LoadTexture( &gContentScans[1][2], _binary_data_BombaRoja_tim_start); 
-
-    dcRender_LoadTexture( &gContentScans[2][0], _binary_data_MarihuanaRojo_tim_start); 
-    dcRender_LoadTexture( &gContentScans[2][1], _binary_data_MarihuanaRojo_tim_start); 
-    dcRender_LoadTexture( &gContentScans[2][2], _binary_data_MarihuanaRojo_tim_start);     
-
-    dcRender_LoadTexture( &gContentScans[3][0], _binary_data_ZapatoRojo_tim_start); 
-    dcRender_LoadTexture( &gContentScans[3][1], _binary_data_ZapatoRojo_tim_start); 
-    dcRender_LoadTexture( &gContentScans[3][2], _binary_data_ZapatoRojo_tim_start);  
+    dcRender_LoadTexture( &gContentScans[1][0][0], _binary_data_CamisetaAzul_tim_start); 
+    dcRender_LoadTexture( &gContentScans[1][0][1], _binary_data_SocksAzul_tim_start); 
+    dcRender_LoadTexture( &gContentScans[1][1][0], _binary_data_BombaAzul_tim_start); 
+    dcRender_LoadTexture( &gContentScans[1][1][1], _binary_data_PistolaAzul_tim_start); 
+    dcRender_LoadTexture( &gContentScans[1][2][0], _binary_data_DrogasAzul_tim_start); 
+    dcRender_LoadTexture( &gContentScans[1][2][1], _binary_data_JeringaAzul_tim_start);          
+    dcRender_LoadTexture( &gContentScans[1][3][0], _binary_data_AbuelaAzul_tim_start); 
+    dcRender_LoadTexture( &gContentScans[1][3][1], _binary_data_MermaidAzul_tim_start);  
 }
 
 void TrySpawnSuitcaseAtBelt(unsigned char beltId)
@@ -228,7 +239,7 @@ void TrySpawnSuitcaseAtBelt(unsigned char beltId)
         if ( gDiffiultyLevel > 2 ) { ++maxContentAllowed; }
         if ( gDiffiultyLevel > 3 ) { ++maxContentAllowed; }
 
-        SetupSuitcase(newSuitcase, GetRandomNumber(0,MAX_SHAPES), GetRandomNumber(0,MAX_PATTERNS), GetRandomNumber(0,maxContentAllowed));
+        SetupSuitcase(newSuitcase, GetRandomNumber(0,MAX_SHAPES), GetRandomNumber(0,MAX_PATTERNS), GetRandomNumber(0,maxContentAllowed), GetRandomNumber(0, ITEM_VARIANTS));
 
         const int suitcaseIndex = GetSuitcaseIndex(newSuitcase);
 
@@ -280,7 +291,7 @@ void ValidateSuitcase(int index)
 
     char contentMask = content == 0? 0 : 1 << content;
 
-    printf("Validating... %d against %d\n", contentMask, validator);
+    //printf("Validating... %d against %d\n", contentMask, validator);
 
     if ( contentMask == validator ) 
     { 
@@ -413,7 +424,37 @@ void UpdateCheats(int padId)
         { 
             gCheatInvicible = !gCheatInvicible;
         }
+    }
 
+    if ( dcInput_IsPressed(&gAirport.input[padId], PADL2) && dcInput_IsPressed(&gAirport.input[padId], PADR2) )
+    {
+        if ( dcInput_BecomesPressed(&gAirport.input[padId],PADLup))
+        { 
+            gRedColorIntensity += dcInput_IsPressed(&gAirport.input[padId],PADRdown)? 10 : 1; 
+            if ( gRedColorIntensity > 255 ) gRedColorIntensity = 255;
+            printf("Red Intensity to %d\n", gRedColorIntensity);
+        }
+        
+        if ( dcInput_BecomesPressed(&gAirport.input[padId],PADLdown))
+        { 
+            gRedColorIntensity -= dcInput_IsPressed(&gAirport.input[padId],PADRdown)? 10 : 1; 
+            if ( gRedColorIntensity < 0 ) gRedColorIntensity = 0;
+            printf("Red Intensity to %d\n", gRedColorIntensity);
+        }
+
+        if ( dcInput_BecomesPressed(&gAirport.input[padId],PADLright))
+        { 
+            gBlueColorIntensity += dcInput_IsPressed(&gAirport.input[padId],PADRdown)? 10 : 1; 
+            if ( gBlueColorIntensity > 255 ) gBlueColorIntensity = 255;
+            printf("Blue Intensity to %d\n", gBlueColorIntensity);
+        }
+        
+        if ( dcInput_BecomesPressed(&gAirport.input[padId],PADLleft))
+        { 
+            gBlueColorIntensity -= dcInput_IsPressed(&gAirport.input[padId],PADRdown)? 10 : 1; 
+            if ( gBlueColorIntensity < 0 ) gBlueColorIntensity = 0;
+            printf("Blue Intensity to %d\n", gBlueColorIntensity);
+        }
     }
 }
 
@@ -512,18 +553,30 @@ void RenderScanners(SDC_Render* render, SDC_Camera* camera)
         if ( prevNode == nextNode && IsScannerNode(beltId, nextNode) )
         {
             unsigned char thisContent = GetSuitcase(i)->content;
+            unsigned char thisContentVariation = GetSuitcase(i)->contentVariation;
             
             SDC_Mesh3D* mesh = beltId ? &ScannerQuad_P2_Mesh : &ScannerQuad_P1_Mesh;
-            SDC_TIM_IMAGE* tim = &(gContentScans[thisContent][GetRandomNumber(0,3)]);
+            SDC_TIM_IMAGE* tim = &(gContentScans[beltId][thisContent][thisContentVariation]);
 
             SDC_DrawParams drawParams = {
                 .tim = NULL,
                 .constantColor = {127, 127, 127},
-                .bLighting = 1,
+                .bLighting = 0,
                 .bUseConstantColor = 1
             };
 
-            //TODO ~ based on belt change the constant color
+            if ( beltId == 0 )
+            {
+                drawParams.constantColor.r = gRedColorIntensity;
+                drawParams.constantColor.g = gRedColorIntensity; 
+                drawParams.constantColor.b = gRedColorIntensity; 
+            }
+            else 
+            { 
+                drawParams.constantColor.r = gBlueColorIntensity;
+                drawParams.constantColor.g = gBlueColorIntensity; 
+                drawParams.constantColor.b = gBlueColorIntensity; 
+            }
 
             SVECTOR rotation = {0};
             VECTOR translation = {0, 0, 0, 0};
@@ -537,8 +590,6 @@ void RenderScanners(SDC_Render* render, SDC_Camera* camera)
 
             drawParams.tim = tim;
             dcRender_DrawMesh(render, mesh, &MVP, &drawParams );
-
-            break;
         }
     }
 }
