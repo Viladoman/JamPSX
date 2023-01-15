@@ -39,6 +39,9 @@ static bool gCheatInvicible = false;
 static int gRedColorIntensity = 255; 
 static int gBlueColorIntensity = 150; 
 
+static int gPathOffset = 0; 
+static int gBeltSpeed = 4;
+
 SDC_DrawParams drawParamsBackground = {
     .tim = NULL,
     .constantColor = {255, 255, 255},
@@ -62,6 +65,7 @@ SDC_DrawParams drawParamsBackgroundBlack = {
 // 5) double belt | 4 options | fast  
 
 extern unsigned long _binary_data_Path_Texture_tim_start[];
+extern unsigned long _binary_data_Path_Texture2_tim_start[];
 extern unsigned long _binary_data_Game_Ground_P1_tim_start[];
 extern unsigned long _binary_data_Game_Ground_P2_tim_start[];
 extern unsigned long _binary_data_Scanners_Texture_tim_start[];
@@ -239,6 +243,7 @@ void StartAirport()
         gAirport.nextSpawn[i] = GetRandomNumber(spawnerTime,range);
     }
     // load textures
+    dcRender_LoadTexture(&gAirport.pathTexture, _binary_data_Path_Texture2_tim_start);
     dcRender_LoadTexture(&gAirport.pathTexture, _binary_data_Path_Texture_tim_start);
     dcRender_LoadTexture(&gAirport.groundP1, _binary_data_Game_Ground_P1_tim_start);
     dcRender_LoadTexture(&gAirport.groundP2, _binary_data_Game_Ground_P2_tim_start);
@@ -511,6 +516,12 @@ void UpdateCheats(int padId)
     }
 }
 
+void UpdateBelts(int elapsed)
+{ 
+    gPathOffset -= elapsed * gBeltSpeed;
+    while (gPathOffset < 0) { gPathOffset += 64; }
+}
+
 void UpdateAirport(int elapsed)
 {
     //Update pause
@@ -526,6 +537,9 @@ void UpdateAirport(int elapsed)
     { 
         return; 
     }
+
+    // Update World 
+    UpdateBelts(elapsed);
 
     // Move current suitcases
     for (int i=0;i<MAX_SUITCASES;++i)
@@ -626,7 +640,7 @@ void RenderScanners(SDC_Render* render, SDC_Camera* camera)
             dcCamera_ApplyCameraTransform(camera, &transform, &MVP);
 
             drawParams.tim = tim;
-            dcRender_DrawMeshFast(render, mesh, &MVP, &drawParams );
+            dcRender_DrawMeshFast(render, mesh, &MVP, &drawParams, 0 );
         }
     }
 }

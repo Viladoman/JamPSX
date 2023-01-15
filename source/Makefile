@@ -25,6 +25,7 @@ SRCS = main.c suitcase.c airport.c image.c \
 		data/ButtonSquare.tim \
 		data/ButtonCircle.tim \
 		data/Path_Texture.tim \
+		data/Path_Texture2.tim \
 		data/DESCONTROL.tim \
 		data/GameOver.tim \
 		data/Game_Ground_P1.tim \
