@@ -22,7 +22,7 @@
 #include "meshes/ScannerQuad_P1.h"
 #include "meshes/ScannerQuad_P2.h"
 
-#include "meshes/Plane001.h"
+#include "meshes/Divider.h"
 
 #define ITEM_VARIANTS 3
 
@@ -45,6 +45,9 @@ static bool gCheatInvicible = false;
 // 5) double belt | 4 options | fast  
 
 extern unsigned long _binary_data_Path_Texture_tim_start[];
+extern unsigned long _binary_data_Game_Ground_P1_tim_start[];
+extern unsigned long _binary_data_Game_Ground_P2_tim_start[];
+extern unsigned long _binary_data_Scanners_Texture_tim_start[];
 
 extern unsigned long _binary_data_BombaAzul_tim_start[];
 extern unsigned long _binary_data_BombaRoja_tim_start[];
@@ -55,7 +58,7 @@ extern unsigned long _binary_data_OsitoRojo_tim_start[];
 extern unsigned long _binary_data_ZapatoAzul_tim_start[];
 extern unsigned long _binary_data_ZapatoRojo_tim_start[];
 
-TIM_IMAGE gContentScans[MAX_ITEM_CATEGORIES][ITEM_VARIANTS];
+SDC_TIM_IMAGE gContentScans[MAX_ITEM_CATEGORIES][ITEM_VARIANTS];
 
 typedef struct 
 {
@@ -73,7 +76,10 @@ typedef struct
     int outputs[2];
     int nextSpawn[2];
     unsigned char beltSize[2];
-    TIM_IMAGE pathTexture;
+    SDC_TIM_IMAGE pathTexture;
+    SDC_TIM_IMAGE groundP1;
+    SDC_TIM_IMAGE groundP2;
+    SDC_TIM_IMAGE scannersTex;
 
     SuitcaseState gSuitcaseStates[MAX_SUITCASES];
 
@@ -190,6 +196,9 @@ void StartAirport()
     }
     // load textures
     dcRender_LoadTexture(&gAirport.pathTexture, _binary_data_Path_Texture_tim_start);
+    dcRender_LoadTexture(&gAirport.groundP1, _binary_data_Game_Ground_P1_tim_start);
+    dcRender_LoadTexture(&gAirport.groundP2, _binary_data_Game_Ground_P2_tim_start);
+    dcRender_LoadTexture(&gAirport.scannersTex, _binary_data_Scanners_Texture_tim_start);
 
     //Icons
     dcRender_LoadTexture( &gContentScans[0][0], _binary_data_OsitoRojo_tim_start); 
@@ -456,6 +465,8 @@ void RenderBackground(SDC_Render* render, SDC_Camera* camera) {
         .bUseConstantColor = 1
     };
 
+    CVECTOR blackColor = {0,0,0};
+
     SVECTOR rotation = {0};
     VECTOR translation = {0, 0, 0, 0};
     MATRIX transform;
@@ -466,16 +477,29 @@ void RenderBackground(SDC_Render* render, SDC_Camera* camera) {
     MATRIX MVP;
     dcCamera_ApplyCameraTransform(camera, &transform, &MVP);
 
+    drawParams.tim = &gAirport.scannersTex;
     dcRender_DrawMesh(render, &Exit_P1_Mesh, &MVP, &drawParams );
     dcRender_DrawMesh(render, &Exit_P2_Mesh, &MVP, &drawParams );
 
     dcRender_DrawMesh(render, &Scanner_P1_Mesh, &MVP, &drawParams );
     dcRender_DrawMesh(render, &Scanner_P2_Mesh, &MVP, &drawParams );
 
+    drawParams.tim = &gAirport.groundP1;
+    dcRender_DrawMesh(render, &Game_Ground_P1_Mesh, &MVP, &drawParams );
+    drawParams.tim = &gAirport.groundP2;
+    dcRender_DrawMesh(render, &Game_Ground_P2_Mesh, &MVP, &drawParams );
+    drawParams.tim = NULL;
+
+    dcRender_DrawMesh(render, &Scanner_P1_Mesh, &MVP, &drawParams );
+    dcRender_DrawMesh(render, &Scanner_P2_Mesh, &MVP, &drawParams );
+
     drawParams.tim = &gAirport.pathTexture;
     dcRender_DrawMesh(render, &Path_P1_Mesh, &MVP, &drawParams );
-    dcRender_DrawMesh(render, &Path_P2_Mesh, &MVP, &drawParams );
+    dcRender_DrawMesh(render, &Path_P2_Mesh, &MVP, &drawParams );    
     drawParams.tim = NULL;
+
+    drawParams.constantColor = blackColor;
+    dcRender_DrawMesh(render, &Divider_Mesh, &MVP, &drawParams );
 }
 
 void RenderScanners(SDC_Render* render, SDC_Camera* camera)
@@ -490,7 +514,7 @@ void RenderScanners(SDC_Render* render, SDC_Camera* camera)
             unsigned char thisContent = GetSuitcase(i)->content;
             
             SDC_Mesh3D* mesh = beltId ? &ScannerQuad_P2_Mesh : &ScannerQuad_P1_Mesh;
-            TIM_IMAGE* tim = &(gContentScans[thisContent][GetRandomNumber(0,3)]);
+            SDC_TIM_IMAGE* tim = &(gContentScans[thisContent][GetRandomNumber(0,3)]);
 
             SDC_DrawParams drawParams = {
                 .tim = NULL,

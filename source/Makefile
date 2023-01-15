@@ -3,6 +3,7 @@ TYPE = ps-exe
 
 SRCS = main.c suitcase.c airport.c image.c \
 		gamestate.c main_menu.c gameover.c \
+		data/Bomba.tim \
 		data/BombaAzul.tim \
 		data/BombaRoja.tim \
 		data/MarihuanaAzul.tim \
@@ -12,6 +13,9 @@ SRCS = main.c suitcase.c airport.c image.c \
 		data/ZapatoAzul.tim \
 		data/ZapatoRojo.tim \
 		data/Path_Texture.tim \
+		data/Game_Ground_P1.tim \
+		data/Game_Ground_P2.tim \
+		data/Scanners_Texture.tim \
 		../third_party/common/syscalls/printf.s \
 		../third_party/common/crt0/crt0.s \
 		dcLibPsx/src/dcMemory.c\
@@ -22,6 +26,7 @@ SRCS = main.c suitcase.c airport.c image.c \
 		dcLibPsx/src/dcCollision.c\
 		dcLibPsx/src/dcMisc.c\
 		dcLibPsx/src/dcFont.c\
+		dcLibPsx/src/dcAudio.c\
 
 CPPFLAGS += -I../third_party/common
 CPPFLAGS += -I../third_party/psyq/include
@@ -31,6 +36,7 @@ LDFLAGS += -L../third_party/psyq/lib
 LDFLAGS += -Wl,--start-group
 LDFLAGS += -lapi
 LDFLAGS += -lc
+LDFLAGS += -lcd
 LDFLAGS += -lc2
 LDFLAGS += -lcard
 LDFLAGS += -lcomb
