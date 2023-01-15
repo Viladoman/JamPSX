@@ -542,28 +542,25 @@ void RenderBackground(SDC_Render* render, SDC_Camera* camera) {
     dcCamera_ApplyCameraTransform(camera, &transform, &MVP);
 
     drawParams.tim = &gAirport.scannersTex;
-    dcRender_DrawMesh(render, &Exit_P1_Mesh, &MVP, &drawParams );
-    dcRender_DrawMesh(render, &Exit_P2_Mesh, &MVP, &drawParams );
+    dcRender_DrawMeshFast(render, &Exit_P1_Mesh, &MVP, &drawParams );
+    dcRender_DrawMeshFast(render, &Exit_P2_Mesh, &MVP, &drawParams );
 
-    dcRender_DrawMesh(render, &Scanner_P1_Mesh, &MVP, &drawParams );
-    dcRender_DrawMesh(render, &Scanner_P2_Mesh, &MVP, &drawParams );
+    dcRender_DrawMeshFast(render, &Scanner_P1_Mesh, &MVP, &drawParams );
+    dcRender_DrawMeshFast(render, &Scanner_P2_Mesh, &MVP, &drawParams );
 
     drawParams.tim = &gAirport.groundP1;
-    dcRender_DrawMesh(render, &Game_Ground_P1_Mesh, &MVP, &drawParams );
+    dcRender_DrawMeshFast(render, &Game_Ground_P1_Mesh, &MVP, &drawParams );
     drawParams.tim = &gAirport.groundP2;
-    dcRender_DrawMesh(render, &Game_Ground_P2_Mesh, &MVP, &drawParams );
+    dcRender_DrawMeshFast(render, &Game_Ground_P2_Mesh, &MVP, &drawParams );
     drawParams.tim = NULL;
 
-    dcRender_DrawMesh(render, &Scanner_P1_Mesh, &MVP, &drawParams );
-    dcRender_DrawMesh(render, &Scanner_P2_Mesh, &MVP, &drawParams );
-
     drawParams.tim = &gAirport.pathTexture;
-    dcRender_DrawMesh(render, &Path_P1_Mesh, &MVP, &drawParams );
-    dcRender_DrawMesh(render, &Path_P2_Mesh, &MVP, &drawParams );    
+    dcRender_DrawMeshFast(render, &Path_P1_Mesh, &MVP, &drawParams );
+    dcRender_DrawMeshFast(render, &Path_P2_Mesh, &MVP, &drawParams );    
     drawParams.tim = NULL;
 
     drawParams.constantColor = blackColor;
-    dcRender_DrawMesh(render, &Divider_Mesh, &MVP, &drawParams );
+    dcRender_DrawMeshFast(render, &Divider_Mesh, &MVP, &drawParams );
 }
 
 void RenderScanners(SDC_Render* render, SDC_Camera* camera)
@@ -612,7 +609,7 @@ void RenderScanners(SDC_Render* render, SDC_Camera* camera)
             dcCamera_ApplyCameraTransform(camera, &transform, &MVP);
 
             drawParams.tim = tim;
-            dcRender_DrawMesh(render, mesh, &MVP, &drawParams );
+            dcRender_DrawMeshFast(render, mesh, &MVP, &drawParams );
         }
     }
 }

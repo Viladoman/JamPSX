@@ -119,7 +119,7 @@ void RenderSuitcase(SDC_Render* render, SDC_Camera* camera, Suitcase* suitcase)
     RotMatrix(&rotation,&transform);
     TransMatrix(&transform, &(suitcase->position));
     dcCamera_ApplyCameraTransform(camera, &transform, &transform);
-    dcRender_DrawMesh(render, suitcase->mesh, &transform, &drawParams);
+    dcRender_DrawMeshFast(render, suitcase->mesh, &transform, &drawParams);
 }
 
 void RenderSuitcases(SDC_Render* render, SDC_Camera* camera)

@@ -41,6 +41,7 @@ SRCS = main.c suitcase.c airport.c image.c \
 		dcLibPsx/src/dcMisc.c\
 		dcLibPsx/src/dcFont.c\
 		dcLibPsx/src/dcAudio.c\
+		dcLibPsx/src/dcPerformance.c\
 
 CPPFLAGS += -I../third_party/common
 CPPFLAGS += -I../third_party/psyq/include

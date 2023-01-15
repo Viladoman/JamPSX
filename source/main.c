@@ -17,6 +17,7 @@
 #include "dcInput.h"
 #include "dcFont.h"
 #include "dcAudio.h"
+#include "dcPerformance.h"
 
 #include "airport.h"
 #include "main_menu.h"
@@ -52,6 +53,9 @@ int main(void)
     dcCamera_SetCameraPosition(&camera, 0, cameraHeight, distance);
     dcCamera_LookAt(&camera, &VECTOR_ZERO);
 
+    // Performance
+    dcPerformance_Init();
+
     // Audio
     dcAudio_Init(&gAudio, 16);
 
@@ -71,8 +75,8 @@ int main(void)
     SVECTOR lightColor1 = {lightPow2, lightPow2, lightPow2};
     dcRender_SetLight(&render, 1, &lightDir1, &lightColor1);
 
-    GameState_ChangeGameState(MAINMENU_GAMESTATE);
-    // GameState_ChangeGameState(AIRPORT_GAMESTATE);
+    // GameState_ChangeGameState(MAINMENU_GAMESTATE);
+    GameState_ChangeGameState(AIRPORT_GAMESTATE);
 
     // Font
     dcFont_UseSystemFont();
