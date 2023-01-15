@@ -57,7 +57,8 @@ extern unsigned long _binary_data_OsitoAzul_tim_start[];
 extern unsigned long _binary_data_OsitoRojo_tim_start[];
 extern unsigned long _binary_data_ZapatoAzul_tim_start[];
 extern unsigned long _binary_data_ZapatoRojo_tim_start[];
-TIM_IMAGE gImageOk, gImageBad;
+
+SDC_TIM_IMAGE gContentScans[2][MAX_ITEM_CATEGORIES][ITEM_VARIANTS];
 
 typedef struct 
 {
@@ -529,10 +530,10 @@ void RenderScanners(SDC_Render* render, SDC_Camera* camera)
         {
             unsigned char thisContent = GetSuitcase(i)->content;
 
-            FntPrint("BELT %d has %d\n", beltId, thisContent);  
-            //TODO ~ RUBEN ~ AQUI 
-            SDC_Mesh3D* mesh = beltId ? &ScannerQuad_P1_Mesh : &ScannerQuad_P2_Mesh;
-            TIM_IMAGE* tim = thisContent ? &gImageBad : &gImageOk;
+            //FntPrint("BELT %d has %d\n", beltId, thisContent);  
+             
+            SDC_Mesh3D* mesh = beltId ? &ScannerQuad_P2_Mesh : &ScannerQuad_P1_Mesh;
+            SDC_TIM_IMAGE* tim = &(gContentScans[beltId][thisContent][GetRandomNumber(0,3)]);
 
             SDC_DrawParams drawParams = {
                 .tim = NULL,

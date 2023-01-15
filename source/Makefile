@@ -3,6 +3,7 @@ TYPE = ps-exe
 
 SRCS = main.c suitcase.c airport.c image.c \
 		gamestate.c main_menu.c gameover.c \
+		data/Bomba.tim \
 		data/BombaAzul.tim \
 		data/BombaRoja.tim \
 		data/MarihuanaAzul.tim \
