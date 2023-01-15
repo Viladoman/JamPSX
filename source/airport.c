@@ -55,7 +55,7 @@ extern unsigned long _binary_data_OsitoRojo_tim_start[];
 extern unsigned long _binary_data_ZapatoAzul_tim_start[];
 extern unsigned long _binary_data_ZapatoRojo_tim_start[];
 
-TIM_IMAGE gContentScans[2][MAX_ITEM_CATEGORIES][ITEM_VARIANTS];
+TIM_IMAGE gContentScans[MAX_ITEM_CATEGORIES][ITEM_VARIANTS];
 
 typedef struct 
 {
@@ -191,39 +191,22 @@ void StartAirport()
     // load textures
     dcRender_LoadTexture(&gAirport.pathTexture, _binary_data_Path_Texture_tim_start);
 
-    //Red
-    dcRender_LoadTexture( &gContentScans[0][0][0], _binary_data_OsitoRojo_tim_start); 
-    dcRender_LoadTexture( &gContentScans[0][0][1], _binary_data_OsitoRojo_tim_start); 
-    dcRender_LoadTexture( &gContentScans[0][0][2], _binary_data_OsitoRojo_tim_start); 
+    //Icons
+    dcRender_LoadTexture( &gContentScans[0][0], _binary_data_OsitoRojo_tim_start); 
+    dcRender_LoadTexture( &gContentScans[0][1], _binary_data_OsitoRojo_tim_start); 
+    dcRender_LoadTexture( &gContentScans[0][2], _binary_data_OsitoRojo_tim_start); 
 
-    dcRender_LoadTexture( &gContentScans[0][1][0], _binary_data_BombaRoja_tim_start); 
-    dcRender_LoadTexture( &gContentScans[0][1][1], _binary_data_BombaRoja_tim_start); 
-    dcRender_LoadTexture( &gContentScans[0][1][2], _binary_data_BombaRoja_tim_start); 
+    dcRender_LoadTexture( &gContentScans[1][0], _binary_data_BombaRoja_tim_start); 
+    dcRender_LoadTexture( &gContentScans[1][1], _binary_data_BombaRoja_tim_start); 
+    dcRender_LoadTexture( &gContentScans[1][2], _binary_data_BombaRoja_tim_start); 
 
-    dcRender_LoadTexture( &gContentScans[0][2][0], _binary_data_MarihuanaRojo_tim_start); 
-    dcRender_LoadTexture( &gContentScans[0][2][1], _binary_data_MarihuanaRojo_tim_start); 
-    dcRender_LoadTexture( &gContentScans[0][2][2], _binary_data_MarihuanaRojo_tim_start);     
+    dcRender_LoadTexture( &gContentScans[2][0], _binary_data_MarihuanaRojo_tim_start); 
+    dcRender_LoadTexture( &gContentScans[2][1], _binary_data_MarihuanaRojo_tim_start); 
+    dcRender_LoadTexture( &gContentScans[2][2], _binary_data_MarihuanaRojo_tim_start);     
 
-    dcRender_LoadTexture( &gContentScans[0][3][0], _binary_data_ZapatoRojo_tim_start); 
-    dcRender_LoadTexture( &gContentScans[0][3][1], _binary_data_ZapatoRojo_tim_start); 
-    dcRender_LoadTexture( &gContentScans[0][3][2], _binary_data_ZapatoRojo_tim_start);  
-
-    //Blue
-    dcRender_LoadTexture( &gContentScans[1][0][0], _binary_data_OsitoAzul_tim_start); 
-    dcRender_LoadTexture( &gContentScans[1][0][1], _binary_data_OsitoAzul_tim_start); 
-    dcRender_LoadTexture( &gContentScans[1][0][2], _binary_data_OsitoAzul_tim_start); 
-
-    dcRender_LoadTexture( &gContentScans[1][1][0], _binary_data_BombaAzul_tim_start); 
-    dcRender_LoadTexture( &gContentScans[1][1][1], _binary_data_BombaAzul_tim_start); 
-    dcRender_LoadTexture( &gContentScans[1][1][2], _binary_data_BombaAzul_tim_start); 
-
-    dcRender_LoadTexture( &gContentScans[1][2][0], _binary_data_MarihuanaAzul_tim_start); 
-    dcRender_LoadTexture( &gContentScans[1][2][1], _binary_data_MarihuanaAzul_tim_start); 
-    dcRender_LoadTexture( &gContentScans[1][2][2], _binary_data_MarihuanaAzul_tim_start);     
-
-    dcRender_LoadTexture( &gContentScans[1][3][0], _binary_data_ZapatoAzul_tim_start); 
-    dcRender_LoadTexture( &gContentScans[1][3][1], _binary_data_ZapatoAzul_tim_start); 
-    dcRender_LoadTexture( &gContentScans[1][3][2], _binary_data_ZapatoAzul_tim_start);  
+    dcRender_LoadTexture( &gContentScans[3][0], _binary_data_ZapatoRojo_tim_start); 
+    dcRender_LoadTexture( &gContentScans[3][1], _binary_data_ZapatoRojo_tim_start); 
+    dcRender_LoadTexture( &gContentScans[3][2], _binary_data_ZapatoRojo_tim_start);  
 }
 
 void TrySpawnSuitcaseAtBelt(unsigned char beltId)
@@ -505,11 +488,9 @@ void RenderScanners(SDC_Render* render, SDC_Camera* camera)
         if ( prevNode == nextNode && IsScannerNode(beltId, nextNode) )
         {
             unsigned char thisContent = GetSuitcase(i)->content;
-
-            //FntPrint("BELT %d has %d\n", beltId, thisContent);  
-             
+            
             SDC_Mesh3D* mesh = beltId ? &ScannerQuad_P2_Mesh : &ScannerQuad_P1_Mesh;
-            TIM_IMAGE* tim = &(gContentScans[beltId][thisContent][GetRandomNumber(0,3)]);
+            TIM_IMAGE* tim = &(gContentScans[thisContent][GetRandomNumber(0,3)]);
 
             SDC_DrawParams drawParams = {
                 .tim = NULL,
@@ -517,6 +498,8 @@ void RenderScanners(SDC_Render* render, SDC_Camera* camera)
                 .bLighting = 1,
                 .bUseConstantColor = 1
             };
+
+            //TODO ~ based on belt change the constant color
 
             SVECTOR rotation = {0};
             VECTOR translation = {0, 0, 0, 0};
